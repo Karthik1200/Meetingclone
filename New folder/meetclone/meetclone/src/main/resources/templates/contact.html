@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - ConferMeet</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <i class="bi bi-camera-video-fill me-2" style="font-size: 1.5rem; color: #4285f4;"></i>
+                <strong>ConferMeet</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contact Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold mb-2">Get in Touch</h1>
+                <p class="lead text-muted">We'd love to hear from you. Send us a message!</p>
+            </div>
+
+            <div class="row g-5">
+                <!-- Contact Form -->
+                <div class="col-lg-6">
+                    <form id="contactForm" class="contact-form">
+                        <div class="mb-4">
+                            <label for="name" class="form-label fw-bold">Full Name</label>
+                            <input type="text" class="form-control form-control-lg border-secondary" id="name" placeholder="John Doe" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="email" class="form-label fw-bold">Email Address</label>
+                            <input type="email" class="form-control form-control-lg border-secondary" id="email" placeholder="john@example.com" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="subject" class="form-label fw-bold">Subject</label>
+                            <input type="text" class="form-control form-control-lg border-secondary" id="subject" placeholder="How can we help?" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="message" class="form-label fw-bold">Message</label>
+                            <textarea class="form-control form-control-lg border-secondary" id="message" rows="5" placeholder="Your message here..." required></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-send me-2"></i>Send Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="col-lg-6">
+                    <div class="contact-info">
+                        <h3 class="fw-bold mb-4">Contact Information</h3>
+                        
+                        <div class="mb-5 d-flex gap-3">
+                            <div class="contact-icon">
+                                <i class="bi bi-geo-alt-fill text-primary" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Address</h6>
+                                <p class="text-muted">123 Tech Street, San Francisco, CA 94102, USA</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-5 d-flex gap-3">
+                            <div class="contact-icon">
+                                <i class="bi bi-telephone-fill text-primary" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Phone</h6>
+                                <p class="text-muted">+1 (555) 123-4567</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-5 d-flex gap-3">
+                            <div class="contact-icon">
+                                <i class="bi bi-envelope-fill text-primary" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Email</h6>
+                                <p class="text-muted">support@confermeet.com</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-5 d-flex gap-3">
+                            <div class="contact-icon">
+                                <i class="bi bi-clock-fill text-primary" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Business Hours</h6>
+                                <p class="text-muted">Monday - Friday: 9:00 AM - 6:00 PM (EST)</p>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <h5 class="fw-bold mt-5 mb-3">Connect With Us</h5>
+                        <div class="d-flex gap-3">
+                            <a href="#" class="btn btn-outline-primary rounded-circle" style="width: 50px; height: 50px;">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-primary rounded-circle" style="width: 50px; height: 50px;">
+                                <i class="bi bi-twitter"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-primary rounded-circle" style="width: 50px; height: 50px;">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-primary rounded-circle" style="width: 50px; height: 50px;">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-5">Frequently Asked Questions</h2>
+            
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    How many people can join a meeting?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    ConferMeet supports up to 500 participants in a single meeting, making it perfect for large team meetings and webinars.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    Is ConferMeet secure?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Yes, ConferMeet uses end-to-end encryption for all meetings, ensuring your conversations remain private and secure.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    Can I record my meetings?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Yes, you can record your meetings. Recordings are stored securely and can be shared with participants who couldn't attend.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    Do I need to install any software?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    No, ConferMeet is web-based and works directly in your browser. No downloads or installations required!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                    What devices can I use?
+                                </button>
+                            </h2>
+                            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    ConferMeet works on any device with a modern browser - desktops, laptops, tablets, and smartphones (iOS and Android).
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <h6 class="fw-bold mb-3">ConferMeet</h6>
+                    <p class="small text-muted">Connecting people, bridging distances.</p>
+                </div>
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <h6 class="fw-bold mb-3">Product</h6>
+                    <ul class="list-unstyled small text-muted">
+                        <li><a href="#" class="text-decoration-none text-muted">Features</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted">Pricing</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted">Security</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <h6 class="fw-bold mb-3">Company</h6>
+                    <ul class="list-unstyled small text-muted">
+                        <li><a href="#" class="text-decoration-none text-muted">About</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted">Blog</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold mb-3">Follow Us</h6>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-muted"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-muted"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="text-muted"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="bg-secondary my-4">
+            <div class="text-center text-muted small">
+                <p>&copy; 2025 ConferMeet. All rights reserved. | <a href="#" class="text-decoration-none text-muted">Privacy Policy</a> | <a href="#" class="text-decoration-none text-muted">Terms of Service</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

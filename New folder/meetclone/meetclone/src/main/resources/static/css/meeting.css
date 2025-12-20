@@ -1,0 +1,312 @@
+/* Meeting Room Styles */
+:root {
+    --primary-color: #4285f4;
+    --dark-bg: #202124;
+    --secondary-bg: #303134;
+    --hover-bg: #3c4043;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--dark-bg);
+    color: white;
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* Meeting Header */
+.meeting-header {
+    background-color: var(--dark-bg);
+}
+
+.meeting-code .badge {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.65rem;
+}
+
+/* Meeting Container */
+.meeting-container {
+    height: calc(100vh - 140px);
+    overflow-y: auto;
+}
+
+/* Video Grid */
+.video-grid {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.main-video {
+    flex-grow: 1;
+    margin-bottom: 1rem;
+}
+
+.video-placeholder {
+    background: linear-gradient(135deg, var(--secondary-bg) 0%, var(--hover-bg) 100%);
+    border: 2px solid var(--hover-bg);
+}
+
+.video-placeholder:hover {
+    border-color: var(--primary-color);
+}
+
+.video-badge {
+    z-index: 10;
+}
+
+/* Secondary Videos */
+.secondary-videos {
+    max-height: 200px;
+}
+
+.video-thumbnail {
+    background: linear-gradient(135deg, var(--secondary-bg) 0%, var(--hover-bg) 100%);
+    border: 2px solid var(--hover-bg);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.video-thumbnail:hover {
+    border-color: var(--primary-color);
+    transform: scale(1.02);
+}
+
+.video-muted {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 0.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Right Sidebar */
+.nav-tabs .nav-link {
+    color: #fff !important;
+    border-color: var(--hover-bg) !important;
+    background-color: var(--secondary-bg);
+}
+
+.nav-tabs .nav-link.active {
+    background-color: var(--primary-color);
+    color: #fff !important;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: var(--primary-color) !important;
+}
+
+.tab-content {
+    background-color: var(--dark-bg);
+}
+
+/* Messages */
+.messages-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.messages-container .bg-secondary {
+    background-color: var(--secondary-bg) !important;
+}
+
+.messages-container .bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+.input-group {
+    gap: 0.5rem;
+}
+
+.input-group .form-control {
+    background-color: var(--secondary-bg);
+    border-color: var(--hover-bg);
+    color: white;
+}
+
+.input-group .form-control::placeholder {
+    color: #999;
+}
+
+.input-group .btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Participants */
+.participants-list {
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+.participant-item {
+    padding: 0.5rem 0;
+}
+
+.participant-item i {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+/* Meeting Controls */
+.meeting-controls {
+    background-color: var(--dark-bg);
+    border-top: 1px solid var(--hover-bg);
+}
+
+.control-btn {
+    width: 56px;
+    height: 56px;
+    font-size: 1.3rem;
+    background-color: white;
+    color: #333;
+    border: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-btn:hover {
+    background-color: #f0f0f0;
+    transform: scale(1.1);
+}
+
+.control-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.control-btn.muted {
+    background-color: var(--danger-color);
+}
+
+.control-btn.muted:hover {
+    background-color: #d33425;
+}
+
+/* Dropdown Menu */
+.dropdown-menu-dark {
+    background-color: var(--secondary-bg);
+    border-color: var(--hover-bg);
+}
+
+.dropdown-menu-dark .dropdown-item {
+    color: white;
+    transition: all 0.2s ease;
+}
+
+.dropdown-menu-dark .dropdown-item:hover {
+    background-color: var(--hover-bg);
+    color: var(--primary-color);
+}
+
+.dropdown-menu-dark .dropdown-item.text-danger:hover {
+    background-color: rgba(234, 67, 53, 0.1);
+    color: var(--danger-color);
+}
+
+/* Avatar */
+.avatar-large {
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--secondary-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--hover-bg);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .secondary-videos {
+        max-height: 150px;
+    }
+
+    .video-thumbnail {
+        height: 120px !important;
+    }
+
+    .main-video {
+        min-height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .meeting-container {
+        height: calc(100vh - 180px);
+    }
+
+    .control-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 1.1rem;
+    }
+
+    .main-video {
+        min-height: 300px;
+    }
+
+    .secondary-videos {
+        max-height: 120px;
+    }
+
+    .video-thumbnail {
+        height: 100px !important;
+    }
+}
+
+/* Animation for call status */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(234, 67, 53, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(234, 67, 53, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(234, 67, 53, 0);
+    }
+}
+
+.recording .badge {
+    animation: pulse 2s infinite;
+}
+
+/* Utility Classes */
+.text-muted-custom {
+    color: #999;
+}
+
+.bg-hover:hover {
+    background-color: var(--hover-bg) !important;
+}
+
+.transition-all {
+    transition: all 0.3s ease;
+}

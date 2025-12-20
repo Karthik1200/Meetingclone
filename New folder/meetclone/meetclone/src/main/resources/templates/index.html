@@ -266,9 +266,9 @@
     </footer>
 
     <!-- Start Meeting Modal -->
-    <div class="modal fade" id="startMeetingModal" tabindex="-1">
+    <div class="modal fade" id="startMeetingModal" tabindex="-1" >
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content" action="/meeting">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">
                         <i class="bi bi-play-circle me-2"></i>Start a New Meeting
@@ -371,7 +371,7 @@
             sessionStorage.setItem('isHost', 'true');
 
             // Redirect to meeting
-            window.location.href = 'meeting.html';
+            window.location.href = '/meeting';
         }
 
         // Join meeting
@@ -395,7 +395,7 @@
             sessionStorage.setItem('isHost', 'false');
 
             // Redirect to meeting
-            window.location.href = 'meeting.html';
+            window.location.href = '/meeting';
         }
 
         // Allow Enter key to submit forms

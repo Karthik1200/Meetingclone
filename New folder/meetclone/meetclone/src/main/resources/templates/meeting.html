@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +16,9 @@
                 <h5 class="text-white mb-0"><i class="bi bi-camera-video-fill me-2"></i>ConferMeet Room</h5>
             </div>
             <div class="meeting-code text-white">
-                <small>Meeting Code: <span class="badge bg-success">abc-defg-hij</span></small>
+                <small>Meeting Code: <span class="badge bg-success" id="meetingCodeBadge" th:text="${meetingCode}">Loading...</span></small>
+                <br>
+                <small th:if="${meetingTitle}" class="text-muted">Title: <span th:text="${meetingTitle}"></span></small>
             </div>
             <div>
                 <button class="btn btn-sm btn-outline-danger" onclick="endMeeting()">
@@ -39,7 +41,7 @@
                                 <div class="avatar-large mb-3">
                                     <i class="bi bi-person-circle" style="font-size: 5rem;"></i>
                                 </div>
-                                <p>John Doe</p>
+                                <p th:text="${username}"></p>
                             </div>
                         </div>
                         <div class="video-badge position-absolute top-0 start-0 m-3">
@@ -48,7 +50,7 @@
                     </div>
 
                     <!-- Secondary Videos Grid -->
-                    <div class="secondary-videos mt-4">
+                    <!-- <div class="secondary-videos mt-4">
                         <div class="row g-2">
                             <div class="col-md-4 col-sm-6">
                                 <div class="video-thumbnail bg-secondary rounded-2 position-relative overflow-hidden" style="height: 150px;">
@@ -87,7 +89,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 
@@ -110,7 +112,7 @@
                 <!-- Tab Content -->
                 <div class="tab-content bg-dark rounded-bottom-3 border border-secondary border-top-0 p-3" style="height: 400px; overflow-y: auto;">
                     <!-- Chat Tab -->
-                    <div id="chat" class="tab-pane fade show active">
+                    <!-- <div id="chat" class="tab-pane fade show active"> -->
                         <div class="messages-container mb-3" style="max-height: 320px; overflow-y: auto;">
                             <div class="mb-3">
                                 <small class="text-muted">John Doe</small>
@@ -140,7 +142,7 @@
                     </div>
 
                     <!-- Participants Tab -->
-                    <div id="participants" class="tab-pane fade">
+                    <!-- <div id="participants" class="tab-pane fade">
                         <div class="participants-list">
                             <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-secondary">
                                 <span class="text-white small fw-bold">Participants (4)</span>
@@ -174,7 +176,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -204,7 +206,10 @@
                     <i class="bi bi-hand-thumbs-up"></i>
                 </button>
 
-                <!-- More Options -->
+                <!-- Share Link -->
+                <button class="btn btn-light rounded-circle control-btn" id="shareLinkBtn" onclick="shareLink()" title="Copy meeting link">
+                    <i class="bi bi-share"></i>
+                </button>
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-light rounded-circle control-btn" data-bs-toggle="dropdown">
                         <i class="bi bi-three-dots-vertical"></i>

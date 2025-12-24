@@ -104,12 +104,33 @@ function raiseHand() {
     }
 }
 
+// Share Meeting Link
+function shareLink() {
+    const meetingCode = document.getElementById('meetingCodeBadge').textContent;
+    const meetingLink = `${window.location.origin}/meeting?code=${meetingCode}`;
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(meetingLink).then(() => {
+        showNotification('Meeting link copied to clipboard!');
+        const shareLinkBtn = document.getElementById('shareLinkBtn');
+        shareLinkBtn.style.backgroundColor = '#34a853';
+        shareLinkBtn.style.color = 'white';
+        
+        setTimeout(() => {
+            shareLinkBtn.style.backgroundColor = 'white';
+            shareLinkBtn.style.color = '#333';
+        }, 2000);
+    }).catch(() => {
+        showAlert('Failed to copy link', 'warning');
+    });
+}
+
 // End Meeting
 function endMeeting() {
     if (confirm('Are you sure you want to end the meeting?')) {
         showAlert('Meeting ended. Redirecting...', 'info');
         setTimeout(() => {
-            window.location.href = 'index.html';
+            window.location.href = '/index';
         }, 1500);
     }
 }

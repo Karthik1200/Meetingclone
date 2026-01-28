@@ -25,6 +25,9 @@ public class User {
 
     private Boolean isActive = true;
 
+    @Column(nullable = false)
+    private String role = "USER";
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -35,9 +38,6 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
-    // ==========================
-    // GETTERS & SETTERS (REQUIRED)
-    // ==========================
 
     public Long getId() {
         return id;
@@ -103,8 +103,15 @@ public class User {
         return lastLogin;
     }
 
-    // 🔥 THIS METHOD WAS MISSING
     public void setLastLogin(LocalDateTime lastLogin) {
         this.lastLogin = lastLogin;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

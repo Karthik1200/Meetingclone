@@ -7,31 +7,36 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-        <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container-fluid px-4">
             <a class="navbar-brand d-flex align-items-center" href="/index">
-                <i class="bi bi-camera-video-fill me-2" style="font-size: 1.5rem; color: #4285f4;"></i>
-                <strong>ConferMeet</strong>
+                <i class="bi bi-camera-video-fill me-2 brand-icon"></i>
+                <span class="brand-text">ConferMeet</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item">
-                        <a class="nav-link" href="#features">Features</a>
+                        <a class="nav-link nav-link-custom" href="#features">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#about">About</a>
+                        <a class="nav-link nav-link-custom" href="#about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#contact">Contact</a>
+                        <a class="nav-link nav-link-custom" href="#contact">Contact</a>
                     </li>
-                    <li class="nav-item">
-                        <p th:text="${email}"></p>
+                    <li class="nav-item ms-3">
+                        <div class="user-avatar">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -39,28 +44,32 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero-section py-5 bg-black text-white">
-        <div class="container py-5">
-            <div class="row align-items-center">
-                <div class="col-lg-6 mb-4 mb-lg-0">
-                    <h1 class="display-4 fw-bold mb-4 text-white">
-                        Crystal Clear Video Conferencing
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-80">
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <h1 class="hero-title mb-4">
+                        Premium video meetings.<br>Now free for everyone.
                     </h1>
-                    <p class="lead text-light mb-4">
-                        Connect with anyone, anywhere. Start instant meetings, no sign-up required. Simple, secure, and reliable video conferencing for everyone.
+                    <p class="hero-subtitle mb-5">
+                        We re-engineered the service that we built for secure business meetings, Google Meet, to make it free and available for all.
                     </p>
-                    <div class="d-flex gap-3">
-                        <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#startMeetingModal">
-                            <i class="bi bi-play-circle me-2"></i>Start a Meeting
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        <button class="btn btn-meet-primary" data-bs-toggle="modal" data-bs-target="#startMeetingModal">
+                            <i class="bi bi-camera-video me-2"></i>New meeting
                         </button>
-                        <button class="btn btn-outline-light btn-lg" data-bs-toggle="modal" data-bs-target="#joinMeetingModal">
-                            <i class="bi bi-door-open me-2"></i>Join a Meeting
+                        <button class="btn btn-meet-outline" data-bs-toggle="modal" data-bs-target="#joinMeetingModal">
+                            <i class="bi bi-keyboard me-2"></i>Enter a code
                         </button>
                     </div>
+                    <div class="divider my-4"></div>
+                    <a href="#" class="learn-more-link">
+                        Learn more about ConferMeet <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
                 </div>
                 <div class="col-lg-6">
-                    <div class="text-center">
-                        <i class="bi bi-camera-video" style="font-size: 150px; color: rgba(255,255,255,0.1);"></i>
+                    <div class="hero-image-container">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3Crect fill='%23f1f3f4' width='600' height='400' rx='12'/%3E%3Ccircle cx='150' cy='120' r='40' fill='%2334a853'/%3E%3Ccircle cx='300' cy='120' r='40' fill='%234285f4'/%3E%3Ccircle cx='450' cy='120' r='40' fill='%23fbbc04'/%3E%3Crect x='100' y='220' width='400' height='120' rx='8' fill='%23fff'/%3E%3Crect x='120' y='240' width='100' height='10' rx='5' fill='%23dadce0'/%3E%3Crect x='120' y='260' width='200' height='10' rx='5' fill='%23dadce0'/%3E%3Crect x='120' y='280' width='150' height='10' rx='5' fill='%23dadce0'/%3E%3C/svg%3E" alt="Video conferencing illustration" class="img-fluid rounded-4">
                     </div>
                 </div>
             </div>
@@ -68,95 +77,76 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="features-section py-5">
+    <section id="features" class="features-section">
         <div class="container">
-            <h2 class="text-center fw-bold mb-5">Why Choose ConferMeet?</h2>
+            <div class="text-center mb-5">
+                <h2 class="section-title">One platform to connect</h2>
+                <p class="section-subtitle">Secure, easy to use, and built for teams of all sizes</p>
+            </div>
             <div class="row g-4">
                 <!-- Feature 1 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="feature-card p-4 rounded-3 text-center h-100">
-                        <div class="feature-icon mb-3">
-                            <i class="bi bi-lightning-charge text-warning"></i>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card-meet">
+                        <div class="feature-icon-meet mb-4">
+                            <i class="bi bi-shield-check"></i>
                         </div>
-                        <h5 class="fw-bold mb-2">Instant Setup</h5>
-                        <p class="text-muted">Start meetings in seconds. No downloads, no signup required.</p>
+                        <h5 class="feature-title-meet mb-3">Built for secure meetings</h5>
+                        <p class="feature-desc-meet">Anti-abuse measures and end-to-end encryption keep your conversations private and secure.</p>
                     </div>
                 </div>
 
                 <!-- Feature 2 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="feature-card p-4 rounded-3 text-center h-100">
-                        <div class="feature-icon mb-3">
-                            <i class="bi bi-shield-check text-success"></i>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card-meet">
+                        <div class="feature-icon-meet mb-4">
+                            <i class="bi bi-people"></i>
                         </div>
-                        <h5 class="fw-bold mb-2">Secure & Private</h5>
-                        <p class="text-muted">End-to-end encryption on all meetings. Your privacy matters.</p>
+                        <h5 class="feature-title-meet mb-3">Connect from anywhere</h5>
+                        <p class="feature-desc-meet">Join meetings on the web, mobile app, or connected devices. One link works across all platforms.</p>
                     </div>
                 </div>
 
                 <!-- Feature 3 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="feature-card p-4 rounded-3 text-center h-100">
-                        <div class="feature-icon mb-3">
-                            <i class="bi bi-people-fill text-primary"></i>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card-meet">
+                        <div class="feature-icon-meet mb-4">
+                            <i class="bi bi-grid-3x3"></i>
                         </div>
-                        <h5 class="fw-bold mb-2">Group Meetings</h5>
-                        <p class="text-muted">Connect with up to 500 participants in crystal clear HD.</p>
+                        <h5 class="feature-title-meet mb-3">See everyone together</h5>
+                        <p class="feature-desc-meet">View up to 49 participants in a tiled layout for better engagement during meetings.</p>
                     </div>
                 </div>
 
                 <!-- Feature 4 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="feature-card p-4 rounded-3 text-center h-100">
-                        <div class="feature-icon mb-3">
-                            <i class="bi bi-chat-dots text-info"></i>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card-meet">
+                        <div class="feature-icon-meet mb-4">
+                            <i class="bi bi-box-arrow-up-right"></i>
                         </div>
-                        <h5 class="fw-bold mb-2">Chat & Sharing</h5>
-                        <p class="text-muted">Share files, screens, and messages all in one place.</p>
+                        <h5 class="feature-title-meet mb-3">Present your screen</h5>
+                        <p class="feature-desc-meet">Share your entire screen, a window, or a Chrome tab with crystal-clear quality.</p>
                     </div>
                 </div>
 
                 <!-- Feature 5 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="feature-card p-4 rounded-3 text-center h-100">
-                        <div class="feature-icon mb-3">
-                            <i class="bi bi-telephone-fill text-danger"></i>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card-meet">
+                        <div class="feature-icon-meet mb-4">
+                            <i class="bi bi-chat-dots"></i>
                         </div>
-                        <h5 class="fw-bold mb-2">Crystal Audio</h5>
-                        <p class="text-muted">High-quality audio with noise cancellation technology.</p>
+                        <h5 class="feature-title-meet mb-3">Collaborate with your team</h5>
+                        <p class="feature-desc-meet">Use in-call messaging to share ideas, links, and files while staying focused on the discussion.</p>
                     </div>
                 </div>
 
                 <!-- Feature 6 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="feature-card p-4 rounded-3 text-center h-100">
-                        <div class="feature-icon mb-3">
-                            <i class="bi bi-clock-history text-secondary"></i>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card-meet">
+                        <div class="feature-icon-meet mb-4">
+                            <i class="bi bi-eye-slash"></i>
                         </div>
-                        <h5 class="fw-bold mb-2">Meeting Records</h5>
-                        <p class="text-muted">Record and save meetings for future reference.</p>
-                    </div>
-                </div>
-
-                <!-- Feature 7 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="feature-card p-4 rounded-3 text-center h-100">
-                        <div class="feature-icon mb-3">
-                            <i class="bi bi-phone text-success"></i>
-                        </div>
-                        <h5 class="fw-bold mb-2">Mobile Friendly</h5>
-                        <p class="text-muted">Join meetings from any device - desktop, tablet, or phone.</p>
-                    </div>
-                </div>
-
-                <!-- Feature 8 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="feature-card p-4 rounded-3 text-center h-100">
-                        <div class="feature-icon mb-3">
-                            <i class="bi bi-gear-fill text-dark"></i>
-                        </div>
-                        <h5 class="fw-bold mb-2">Easy Controls</h5>
-                        <p class="text-muted">Simple and intuitive controls for everyone.</p>
+                        <h5 class="feature-title-meet mb-3">Background effects</h5>
+                        <p class="feature-desc-meet">Blur your background or replace it completely to minimize distractions during calls.</p>
                     </div>
                 </div>
             </div>
@@ -164,137 +154,121 @@
     </section>
 
     <!-- How It Works Section -->
-    <section id="about" class="how-it-works py-5 bg-light">
+    <section id="about" class="how-it-works-section">
         <div class="container">
-            <h2 class="text-center fw-bold mb-5">How It Works</h2>
+            <div class="text-center mb-5">
+                <h2 class="section-title">Get started in three easy steps</h2>
+            </div>
             <div class="row g-4">
                 <div class="col-md-4">
-                    <div class="step-card text-center">
-                        <div class="step-number">1</div>
-                        <h5 class="fw-bold mt-3 mb-2">Click "Start Meeting"</h5>
-                        <p class="text-muted">Press the button and you're ready to go in seconds.</p>
+                    <div class="step-card-meet">
+                        <div class="step-number-meet">1</div>
+                        <h5 class="step-title-meet">Create a meeting</h5>
+                        <p class="step-desc-meet">Click "New meeting" to get a shareable link you can send to your participants.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="step-card text-center">
-                        <div class="step-number">2</div>
-                        <h5 class="fw-bold mt-3 mb-2">Share Meeting Code</h5>
-                        <p class="text-muted">Get your unique meeting code and share it with participants.</p>
+                    <div class="step-card-meet">
+                        <div class="step-number-meet">2</div>
+                        <h5 class="step-title-meet">Share the code</h5>
+                        <p class="step-desc-meet">Send the meeting code or link via email, chat, or calendar invite.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="step-card text-center">
-                        <div class="step-number">3</div>
-                        <h5 class="fw-bold mt-3 mb-2">Connect & Collaborate</h5>
-                        <p class="text-muted">Participants join using the code - no sign-up needed!</p>
+                    <div class="step-card-meet">
+                        <div class="step-number-meet">3</div>
+                        <h5 class="step-title-meet">Join and collaborate</h5>
+                        <p class="step-desc-meet">Participants can join from any device with just a click—no downloads required.</p>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section class="stats-section py-5">
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-md-3 mb-4">
-                    <h3 class="display-6 fw-bold text-primary">10M+</h3>
-                    <p class="text-muted">Meetings Hosted</p>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <h3 class="display-6 fw-bold text-success">50M+</h3>
-                    <p class="text-muted">Users Worldwide</p>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <h3 class="display-6 fw-bold text-warning">99.9%</h3>
-                    <p class="text-muted">Uptime Guarantee</p>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <h3 class="display-6 fw-bold text-info">24/7</h3>
-                    <p class="text-muted">Customer Support</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- CTA Section -->
-    <section class="cta-section py-5 bg-black text-white">
+    <section class="cta-section-meet">
         <div class="container text-center">
-            <h2 class="display-5 fw-bold mb-4 text-white">Ready to Connect?</h2>
-            <p class="lead text-light mb-4">Start your first meeting now. It only takes a second.</p>
-            <button class="btn btn-light btn-lg" data-bs-toggle="modal" data-bs-target="#startMeetingModal">
-                <i class="bi bi-play-circle me-2"></i>Start Meeting Now
+            <h2 class="cta-title-meet mb-4">Ready to get started?</h2>
+            <p class="cta-subtitle-meet mb-5">Create your first meeting now. It's free and easy.</p>
+            <button class="btn btn-meet-primary-large" data-bs-toggle="modal" data-bs-target="#startMeetingModal">
+                <i class="bi bi-camera-video me-2"></i>Start a meeting
             </button>
         </div>
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="contact-section py-5">
+    <section id="contact" class="contact-section-meet">
         <div class="container">
-            <h2 class="text-center fw-bold mb-5">Get in Touch</h2>
-            <div class="row">
-                <div class="col-md-4 text-center mb-4">
-                    <i class="bi bi-envelope text-primary" style="font-size: 2rem;"></i>
-                    <h5 class="fw-bold mt-3 mb-2">Email</h5>
-                    <p class="text-muted">support@confermeet.com</p>
+            <div class="text-center mb-5">
+                <h2 class="section-title">Need help?</h2>
+                <p class="section-subtitle">Our support team is here to assist you</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="contact-card-meet">
+                        <i class="bi bi-envelope contact-icon-meet"></i>
+                        <h5 class="contact-title-meet">Email</h5>
+                        <p class="contact-desc-meet">support@confermeet.com</p>
+                    </div>
                 </div>
-                <div class="col-md-4 text-center mb-4">
-                    <i class="bi bi-telephone text-success" style="font-size: 2rem;"></i>
-                    <h5 class="fw-bold mt-3 mb-2">Phone</h5>
-                    <p class="text-muted">+1 (800) 123-4567</p>
+                <div class="col-md-4">
+                    <div class="contact-card-meet">
+                        <i class="bi bi-telephone contact-icon-meet"></i>
+                        <h5 class="contact-title-meet">Phone</h5>
+                        <p class="contact-desc-meet">+1 (800) 123-4567</p>
+                    </div>
                 </div>
-                <div class="col-md-4 text-center mb-4">
-                    <i class="bi bi-chat-dots text-info" style="font-size: 2rem;"></i>
-                    <h5 class="fw-bold mt-3 mb-2">Chat</h5>
-                    <p class="text-muted">Live chat support available</p>
+                <div class="col-md-4">
+                    <div class="contact-card-meet">
+                        <i class="bi bi-question-circle contact-icon-meet"></i>
+                        <h5 class="contact-title-meet">Help Center</h5>
+                        <p class="contact-desc-meet">Visit our FAQ</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-4 mt-5">
+    <footer class="footer-meet">
         <div class="container">
-            <div class="row">
+            <div class="row align-items-center">
                 <div class="col-md-6">
-                    <p class="mb-0">&copy; 2025 ConferMeet. All rights reserved.</p>
+                    <p class="footer-text mb-0">&copy; 2025 ConferMeet. All rights reserved.</p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <a href="#" class="text-decoration-none text-muted me-3">Privacy Policy</a>
-                    <a href="#" class="text-decoration-none text-muted me-3">Terms of Service</a>
-                    <a href="#" class="text-decoration-none text-muted">Security</a>
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="#" class="footer-link">Terms of Service</a>
+                    <a href="#" class="footer-link">Help</a>
                 </div>
             </div>
         </div>
     </footer>
 
     <!-- Start Meeting Modal -->
-    <div class="modal fade" id="startMeetingModal" tabindex="-1" >
+    <div class="modal fade" id="startMeetingModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">
-                        <i class="bi bi-play-circle me-2"></i>Start a New Meeting
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            <div class="modal-content modal-meet">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title-meet">Create a meeting for later</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="/startMeeting" method="POST">
-                    <div class="modal-body p-4">
-                        <p class="text-muted mb-4">Enter meeting details to start:</p>
-                        <div class="mb-3">
-                            <label for="meetingName" class="form-label fw-bold">Meeting Name</label>
-                            <input type="text" class="form-control form-control-lg" id="meetingName" 
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <label for="meetingName" class="form-label-meet">Meeting name</label>
+                            <input type="text" class="form-control-meet" id="meetingName" 
                                    name="meetingName" placeholder="e.g., Team Standup" required>
                         </div>
-                        <div class="alert alert-info">
+                        <div class="info-box-meet">
                             <i class="bi bi-info-circle me-2"></i>
-                            <small>Your meeting code will be generated automatically and shared with your participants.</small>
+                            <small>You'll get a meeting link to share with participants</small>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="bi bi-play-circle me-2"></i>Start Meeting
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-meet-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-meet-primary">
+                            Continue
                         </button>
                     </div>
                 </form>
@@ -305,35 +279,32 @@
     <!-- Join Meeting Modal -->
     <div class="modal fade" id="joinMeetingModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">
-                        <i class="bi bi-door-open me-2"></i>Join a Meeting
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            <div class="modal-content modal-meet">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title-meet">Enter meeting code</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="/joinMeeting" method="POST">
-                    <div class="modal-body p-4">
-                        <p class="text-muted mb-4">Enter your meeting details to join:</p>
-                        <div class="mb-3">
-                            <label for="joinName" class="form-label fw-bold">Your Name</label>
-                            <input type="text" class="form-control form-control-lg" id="joinName" 
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <label for="joinName" class="form-label-meet">Your name</label>
+                            <input type="text" class="form-control-meet" id="joinName" 
                                    name="yourName" placeholder="Enter your name" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="meetingCode" class="form-label fw-bold">Meeting Code</label>
-                            <input type="text" class="form-control form-control-lg" id="meetingCode" 
-                                   name="meetingCode" placeholder="e.g., ABC-123-XYZ" required>
+                        <div class="mb-4">
+                            <label for="meetingCode" class="form-label-meet">Meeting code</label>
+                            <input type="text" class="form-control-meet" id="meetingCode" 
+                                   name="meetingCode" placeholder="abc-mnop-xyz" required>
                         </div>
-                        <div class="alert alert-info">
+                        <div class="info-box-meet">
                             <i class="bi bi-info-circle me-2"></i>
-                            <small>Ask the host for the meeting code. You'll join immediately.</small>
+                            <small>Get the code from the meeting organizer</small>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-success btn-lg">
-                            <i class="bi bi-door-open me-2"></i>Join Meeting
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-meet-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-meet-primary">
+                            Join
                         </button>
                     </div>
                 </form>
@@ -352,25 +323,6 @@
                     target.scrollIntoView({ behavior: 'smooth' });
                 }
             });
-        });
-
-        // Intersection observer for feature cards animation
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.animation = 'slideUp 0.6s ease forwards';
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.feature-card, .step-card').forEach(card => {
-            observer.observe(card);
         });
     </script>
 </body>

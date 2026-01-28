@@ -38,10 +38,6 @@ public class Meeting {
         this.startedAt = LocalDateTime.now();
     }
 
-    // ==========================
-    // GETTERS & SETTERS
-    // ==========================
-
     public Long getId() {
         return id;
     }

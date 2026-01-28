@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Lobby - ConferMeet</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --dark-bg: #202124;
+            --secondary-bg: #303134;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .lobby-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .preview-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .video-preview {
+            background: var(--dark-bg);
+            border-radius: 15px;
+            aspect-ratio: 16/9;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .video-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: white;
+        }
+
+        .avatar-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            margin: 0 auto 20px;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .control-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .control-btn.muted {
+            background: #ea4335;
+            color: white;
+        }
+
+        .settings-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .device-select {
+            margin-bottom: 15px;
+        }
+
+        .meeting-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .btn-join {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 15px 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .btn-join:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .ready-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 10px;
+        }
+
+        .participant-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .participant-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .host-badge {
+            background: #ffc107;
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="lobby-container">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="preview-card">
+                    <h2 class="mb-4"><i class="bi bi-camera-video me-2 text-primary"></i>Ready to join?</h2>
+                    
+                    <div class="video-preview">
+                        <div class="video-placeholder">
+                            <div class="text-center">
+                                <div class="avatar-preview">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                <h4 th:text="${username}">Your Name</h4>
+                                <p class="text-muted">Camera is off</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <button class="control-btn muted" id="micBtn" onclick="toggleMic()" title="Microphone">
+                            <i class="bi bi-mic-mute-fill"></i>
+                        </button>
+                        <button class="control-btn muted" id="camBtn" onclick="toggleCamera()" title="Camera">
+                            <i class="bi bi-camera-video-off-fill"></i>
+                        </button>
+                        <button class="control-btn" id="settingsBtn" onclick="toggleSettings()" title="Settings">
+                            <i class="bi bi-gear-fill"></i>
+                        </button>
+                    </div>
+
+                    <div class="settings-panel" id="settingsPanel" style="display: none;">
+                        <h5 class="mb-3"><i class="bi bi-gear me-2"></i>Audio & Video Settings</h5>
+                        
+                        <div class="device-select">
+                            <label class="form-label fw-bold">Microphone</label>
+                            <select class="form-select">
+                                <option>Default Microphone</option>
+                                <option>Built-in Microphone</option>
+                            </select>
+                        </div>
+
+                        <div class="device-select">
+                            <label class="form-label fw-bold">Camera</label>
+                            <select class="form-select">
+                                <option>Default Camera</option>
+                                <option>Built-in Camera</option>
+                            </select>
+                        </div>
+
+                        <div class="device-select">
+                            <label class="form-label fw-bold">Speaker</label>
+                            <select class="form-select">
+                                <option>Default Speaker</option>
+                                <option>Built-in Speaker</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-sm btn-primary" onclick="testAudio()">
+                            <i class="bi bi-volume-up me-2"></i>Test Speaker
+                        </button>
+                    </div>
+
+                    <div class="ready-check">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <strong>You're all set!</strong>
+                            <p class="mb-0 text-muted small">Click "Join Now" when you're ready to enter the meeting</p>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <form action="/meeting" method="GET">
+                            <button type="submit" class="btn btn-join">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Join Now
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="preview-card">
+                    <div class="meeting-info">
+                        <h4 class="mb-3"><i class="bi bi-info-circle me-2"></i>Meeting Details</h4>
+                        <div class="mb-3">
+                            <small class="text-white-50">Meeting Title</small>
+                            <h5 th:text="${meetingTitle}">Team Meeting</h5>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-white-50">Meeting Code</small>
+                            <h5 class="d-flex align-items-center">
+                                <span th:text="${meetingCode}">ABC-123-XYZ</span>
+                                <button class="btn btn-sm btn-light ms-2" onclick="copyMeetingCode()">
+                                    <i class="bi bi-clipboard"></i>
+                                </button>
+                            </h5>
+                        </div>
+                        <div th:if="${isHost}">
+                            <span class="host-badge"><i class="bi bi-star-fill me-1"></i>You are the host</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h5 class="mb-3"><i class="bi bi-people me-2"></i>In Lobby (1)</h5>
+                        <div class="participant-list">
+                            <div class="participant-item">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="avatar-preview" style="width: 40px; height: 40px; font-size: 1rem;">
+                                        <i class="bi bi-person-fill"></i>
+                                    </div>
+                                    <div>
+                                        <strong th:text="${username}">You</strong>
+                                        <br>
+                                        <small class="text-muted">Waiting to join</small>
+                                    </div>
+                                </div>
+                                <span class="badge bg-success">Ready</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6 class="mb-2"><i class="bi bi-lightbulb text-warning me-2"></i>Quick Tips</h6>
+                        <ul class="small text-muted mb-0 ps-3">
+                            <li>Test your audio and video before joining</li>
+                            <li>Make sure you're in a quiet environment</li>
+                            <li>Check your internet connection</li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <a href="/index" class="btn btn-outline-danger">
+                            <i class="bi bi-x-circle me-2"></i>Leave Lobby
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let isMicMuted = true;
+        let isCameraOff = true;
+
+        function toggleMic() {
+            const btn = document.getElementById('micBtn');
+            isMicMuted = !isMicMuted;
+            
+            if (isMicMuted) {
+                btn.classList.add('muted');
+                btn.innerHTML = '<i class="bi bi-mic-mute-fill"></i>';
+            } else {
+                btn.classList.remove('muted');
+                btn.classList.add('active');
+                btn.innerHTML = '<i class="bi bi-mic-fill"></i>';
+            }
+        }
+
+        function toggleCamera() {
+            const btn = document.getElementById('camBtn');
+            isCameraOff = !isCameraOff;
+            
+            if (isCameraOff) {
+                btn.classList.add('muted');
+                btn.innerHTML = '<i class="bi bi-camera-video-off-fill"></i>';
+            } else {
+                btn.classList.remove('muted');
+                btn.classList.add('active');
+                btn.innerHTML = '<i class="bi bi-camera-video-fill"></i>';
+            }
+        }
+
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            const btn = document.getElementById('settingsBtn');
+            
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                btn.classList.add('active');
+            } else {
+                panel.style.display = 'none';
+                btn.classList.remove('active');
+            }
+        }
+
+        function testAudio() {
+            const audio = new Audio('https://www.soundjay.com/button/sounds/beep-07.mp3');
+            audio.play();
+        }
+
+        function copyMeetingCode() {
+            const codeElement = document.querySelector('[th\\:text="${meetingCode}"]');
+            const code = codeElement ? codeElement.textContent : '';
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(code).then(() => {
+                    showNotification('Meeting code copied!');
+                });
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-success position-fixed top-0 start-50 translate-middle-x mt-3';
+            notification.style.zIndex = '9999';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => notification.remove(), 3000);
+        }
+    </script>
+</body>
+</html>

@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="css/meeting.css">
 </head>
 <body class="bg-dark">
-    <!-- Top Controls -->
     <div class="meeting-header bg-dark border-bottom border-secondary">
         <div class="container-fluid d-flex justify-content-between align-items-center py-3">
             <div>
@@ -28,13 +27,10 @@
         </div>
     </div>
 
-    <!-- Main Meeting Area -->
     <div class="container-fluid meeting-container py-4">
         <div class="row h-100">
-            <!-- Video Grid Section -->
             <div class="col-lg-9 mb-4 mb-lg-0">
                 <div class="video-grid">
-                    <!-- Main Video -->
                     <div class="main-video position-relative">
                         <div class="video-placeholder bg-secondary rounded-3 d-flex align-items-center justify-content-center" style="height: 100%; min-height: 500px;">
                             <div class="text-center text-white">
@@ -48,54 +44,10 @@
                             <span class="badge bg-danger"><i class="bi bi-dot-fill"></i> Recording</span>
                         </div>
                     </div>
-
-                    <!-- Secondary Videos Grid -->
-                    <!-- <div class="secondary-videos mt-4">
-                        <div class="row g-2">
-                            <div class="col-md-4 col-sm-6">
-                                <div class="video-thumbnail bg-secondary rounded-2 position-relative overflow-hidden" style="height: 150px;">
-                                    <div class="d-flex align-items-center justify-content-center h-100">
-                                        <div class="text-center text-white">
-                                            <i class="bi bi-person-circle" style="font-size: 3rem;"></i>
-                                            <p class="small mt-2 mb-0">Jane Smith</p>
-                                        </div>
-                                    </div>
-                                    <div class="video-muted position-absolute top-0 end-0 m-2">
-                                        <i class="bi bi-mic-mute text-white" style="font-size: 1.2rem;"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-sm-6">
-                                <div class="video-thumbnail bg-secondary rounded-2 position-relative overflow-hidden" style="height: 150px;">
-                                    <div class="d-flex align-items-center justify-content-center h-100">
-                                        <div class="text-center text-white">
-                                            <i class="bi bi-person-circle" style="font-size: 3rem;"></i>
-                                            <p class="small mt-2 mb-0">Mike Johnson</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-sm-6">
-                                <div class="video-thumbnail bg-secondary rounded-2 position-relative overflow-hidden" style="height: 150px;">
-                                    <div class="d-flex align-items-center justify-content-center h-100">
-                                        <div class="text-center text-white">
-                                            <i class="bi bi-person-circle" style="font-size: 3rem;"></i>
-                                            <p class="small mt-2 mb-0">Sarah Lee</p>
-                                        </div>
-                                    </div>
-                                    <div class="video-muted position-absolute top-0 end-0 m-2">
-                                        <i class="bi bi-camera-video-off text-white" style="font-size: 1.2rem;"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
                 </div>
             </div>
 
-            <!-- Right Sidebar -->
             <div class="col-lg-3">
-                <!-- Tabs for Chat/Participants -->
                 <ul class="nav nav-tabs bg-secondary rounded-top-3" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link active text-white" data-bs-toggle="tab" href="#chat">
@@ -109,104 +61,62 @@
                     </li>
                 </ul>
 
-                <!-- Tab Content -->
                 <div class="tab-content bg-dark rounded-bottom-3 border border-secondary border-top-0 p-3" style="height: 400px; overflow-y: auto;">
-                    <!-- Chat Tab -->
-                    <!-- <div id="chat" class="tab-pane fade show active"> -->
-                        <div class="messages-container mb-3" style="max-height: 320px; overflow-y: auto;">
+                    <div id="chat" class="tab-pane fade show active">
+                        <div class="messages-container mb-3" id="messagesContainer" style="max-height: 320px; overflow-y: auto;">
                             <div class="mb-3">
                                 <small class="text-muted">John Doe</small>
                                 <div class="bg-secondary p-2 rounded-2 mt-1">
                                     <small class="text-white">Hey everyone! Let's begin the meeting.</small>
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <small class="text-muted">Jane Smith</small>
-                                <div class="bg-secondary p-2 rounded-2 mt-1">
-                                    <small class="text-white">Hi! Ready to start.</small>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <small class="text-info">You</small>
-                                <div class="bg-primary p-2 rounded-2 mt-1">
-                                    <small class="text-white">Great! Let's discuss the agenda.</small>
-                                </div>
-                            </div>
                         </div>
                         <div class="input-group mt-2">
-                            <input type="text" class="form-control form-control-sm bg-secondary text-white border-secondary" placeholder="Type a message...">
-                            <button class="btn btn-primary btn-sm" type="button">
+                            <input type="text" id="messageInput" class="form-control form-control-sm bg-secondary text-white border-secondary" placeholder="Type a message...">
+                            <button class="btn btn-primary btn-sm" type="button" id="sendBtn">
                                 <i class="bi bi-send"></i>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Participants Tab -->
-                    <!-- <div id="participants" class="tab-pane fade">
+                    <div id="participants" class="tab-pane fade">
                         <div class="participants-list">
                             <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-secondary">
-                                <span class="text-white small fw-bold">Participants (4)</span>
+                                <span class="text-white small fw-bold">Participants</span>
                                 <i class="bi bi-person-plus text-white" role="button"></i>
                             </div>
                             <div class="participant-item mb-3">
                                 <div class="d-flex align-items-center">
                                     <i class="bi bi-person-circle text-success me-2"></i>
-                                    <span class="text-white small">You (Host)</span>
-                                </div>
-                            </div>
-                            <div class="participant-item mb-3">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center">
-                                        <i class="bi bi-person-circle me-2"></i>
-                                        <span class="text-white small">John Doe</span>
-                                    </div>
-                                    <small class="text-muted">Owner</small>
-                                </div>
-                            </div>
-                            <div class="participant-item mb-3">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-person-circle me-2"></i>
-                                    <span class="text-white small">Jane Smith</span>
-                                </div>
-                            </div>
-                            <div class="participant-item mb-3">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-person-circle me-2"></i>
-                                    <span class="text-white small">Mike Johnson</span>
+                                    <span class="text-white small fw-bold">You (Host)</span>
                                 </div>
                             </div>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bottom Controls -->
     <div class="meeting-controls bg-dark border-top border-secondary">
         <div class="container-fluid py-3">
             <div class="d-flex justify-content-center gap-3 flex-wrap">
-                <!-- Mic Control -->
                 <button class="btn btn-light rounded-circle control-btn" id="micBtn" onclick="toggleMic()" title="Mute/Unmute">
                     <i class="bi bi-mic-fill"></i>
                 </button>
 
-                <!-- Camera Control -->
                 <button class="btn btn-light rounded-circle control-btn" id="cameraBtn" onclick="toggleCamera()" title="Turn camera off/on">
                     <i class="bi bi-camera-video-fill"></i>
                 </button>
 
-                <!-- Screen Share -->
                 <button class="btn btn-light rounded-circle control-btn" id="shareBtn" onclick="shareScreen()" title="Share your screen">
                     <i class="bi bi-window-stack"></i>
                 </button>
 
-                <!-- Hand Raise -->
                 <button class="btn btn-light rounded-circle control-btn" id="handBtn" onclick="raiseHand()" title="Raise your hand">
                     <i class="bi bi-hand-thumbs-up"></i>
                 </button>
 
-                <!-- Share Link -->
                 <button class="btn btn-light rounded-circle control-btn" id="shareLinkBtn" onclick="shareLink()" title="Copy meeting link">
                     <i class="bi bi-share"></i>
                 </button>
@@ -223,7 +133,6 @@
                     </ul>
                 </div>
 
-                <!-- End Meeting -->
                 <button class="btn btn-danger rounded-circle control-btn ms-lg-5" onclick="endMeeting()" title="End meeting">
                     <i class="bi bi-telephone-x"></i>
                 </button>

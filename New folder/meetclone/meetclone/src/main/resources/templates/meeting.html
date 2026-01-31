@@ -5,300 +5,1187 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meeting Room - ConferMeet</title>
+    <meta name="description" content="ConferMeet video meeting room - Connect with your team seamlessly">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="css/meeting.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/theme.css">
+    <style>
+        :root {
+            --meet-bg: #202124;
+            --meet-surface: #3c4043;
+            --meet-hover: #5f6368;
+            --meet-border: #5f6368;
+            --meet-primary: #8ab4f8;
+            --meet-green: #34a853;
+            --meet-red: #ea4335;
+            --meet-yellow: #fbbc04;
+            --meet-blue: #4285f4;
+            --grid-gap: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--meet-bg);
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Main Layout */
+        .meeting-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Header */
+        .meeting-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            background: var(--meet-bg);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            height: 56px;
+        }
+
+        .meeting-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .meeting-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .meeting-code-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .meeting-code-badge:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .meeting-time {
+            font-size: 0.875rem;
+            color: #9aa0a6;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .header-btn:hover {
+            background: var(--meet-surface);
+        }
+
+        /* Video Area */
+        .video-area {
+            flex: 1;
+            display: flex;
+            padding: 16px;
+            gap: 16px;
+            overflow: hidden;
+        }
+
+        .video-grid {
+            flex: 1;
+            display: grid;
+            gap: var(--grid-gap);
+            transition: all 0.3s ease;
+        }
+
+        /* Dynamic grid layouts */
+        .video-grid.grid-1 {
+            grid-template-columns: 1fr;
+        }
+
+        .video-grid.grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .video-grid.grid-3,
+        .video-grid.grid-4 {
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+        }
+
+        .video-grid.grid-5,
+        .video-grid.grid-6 {
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+        }
+
+        .video-grid.grid-7,
+        .video-grid.grid-8,
+        .video-grid.grid-9 {
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+        }
+
+        .video-grid.grid-many {
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 1fr;
+        }
+
+        /* Video Tile */
+        .video-tile {
+            position: relative;
+            background: var(--meet-surface);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 150px;
+            transition: all 0.3s ease;
+        }
+
+        .video-tile:hover {
+            outline: 2px solid var(--meet-primary);
+        }
+
+        .video-tile.speaking {
+            outline: 3px solid var(--meet-green);
+        }
+
+        .video-tile.pinned {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+
+        .video-tile.screen-share {
+            background: #000;
+        }
+
+        .video-tile video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .avatar-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--meet-blue), #8e44ad);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .participant-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Tile Overlays */
+        .tile-overlay-top {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .tile-badges {
+            display: flex;
+            gap: 6px;
+        }
+
+        .tile-badge {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tile-badge.host {
+            background: var(--meet-yellow);
+            color: #000;
+        }
+
+        .tile-badge.hand-raised {
+            background: var(--meet-yellow);
+            color: #000;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .tile-overlay-bottom {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tile-name {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .tile-media-status {
+            display: flex;
+            gap: 4px;
+        }
+
+        .media-indicator {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .media-indicator.off {
+            background: var(--meet-red);
+        }
+
+        /* Tile Actions (on hover) */
+        .tile-actions {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .video-tile:hover .tile-actions {
+            display: flex;
+        }
+
+        .tile-action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--meet-surface);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .tile-action-btn:hover {
+            background: var(--meet-hover);
+        }
+
+        .tile-action-btn.danger:hover {
+            background: var(--meet-red);
+        }
+
+        /* Side Panel */
+        .side-panel {
+            width: 360px;
+            background: var(--meet-bg);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+            flex-direction: column;
+        }
+
+        .side-panel.open {
+            display: flex;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .panel-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: #9aa0a6;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .panel-close:hover {
+            background: var(--meet-surface);
+        }
+
+        .panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        /* Participants List */
+        .participant-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: background 0.2s;
+        }
+
+        .participant-item:hover {
+            background: var(--meet-surface);
+        }
+
+        .participant-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .participant-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--meet-blue), #8e44ad);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .participant-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .participant-name-list {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .participant-role {
+            font-size: 0.75rem;
+            color: #9aa0a6;
+        }
+
+        .participant-controls {
+            display: flex;
+            gap: 4px;
+        }
+
+        .participant-control-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: #9aa0a6;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .participant-control-btn:hover {
+            background: var(--meet-surface);
+            color: white;
+        }
+
+        .participant-control-btn.off {
+            color: var(--meet-red);
+        }
+
+        /* Chat Panel */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 4px 0;
+        }
+
+        .chat-message {
+            margin-bottom: 16px;
+        }
+
+        .chat-message-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .chat-sender {
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .chat-time {
+            font-size: 0.75rem;
+            color: #9aa0a6;
+        }
+
+        .chat-text {
+            background: var(--meet-surface);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            display: inline-block;
+            max-width: 85%;
+        }
+
+        .chat-message.own .chat-text {
+            background: var(--meet-blue);
+        }
+
+        .chat-input-area {
+            padding: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: var(--meet-surface);
+            border-radius: 24px;
+            padding: 8px 16px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .chat-input::placeholder {
+            color: #9aa0a6;
+        }
+
+        .chat-send-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--meet-blue);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-send-btn:hover {
+            background: #5a9cff;
+        }
+
+        .chat-send-btn:disabled {
+            background: var(--meet-hover);
+            cursor: not-allowed;
+        }
+
+        /* Control Bar */
+        .control-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            background: var(--meet-bg);
+            gap: 12px;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .control-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.2s;
+            background: var(--meet-surface);
+            color: white;
+        }
+
+        .control-btn:hover {
+            background: var(--meet-hover);
+        }
+
+        .control-btn.active {
+            background: var(--meet-blue);
+        }
+
+        .control-btn.off {
+            background: var(--meet-red);
+        }
+
+        .control-btn.end-call {
+            background: var(--meet-red);
+            width: 56px;
+            height: 56px;
+            margin: 0 16px;
+        }
+
+        .control-btn.end-call:hover {
+            background: #d33426;
+        }
+
+        /* Dropdown for more options */
+        .more-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu-custom {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--meet-surface);
+            border-radius: 8px;
+            padding: 8px 0;
+            min-width: 200px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            display: none;
+            z-index: 100;
+        }
+
+        .dropdown-menu-custom.show {
+            display: block;
+        }
+
+        .dropdown-item-custom {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .dropdown-item-custom:hover {
+            background: var(--meet-hover);
+        }
+
+        .dropdown-item-custom i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Host Controls Panel */
+        .host-controls {
+            background: linear-gradient(135deg, rgba(251, 188, 4, 0.1), rgba(234, 67, 53, 0.1));
+            border: 1px solid var(--meet-yellow);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .host-controls-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--meet-yellow);
+        }
+
+        .host-control-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .host-control-label {
+            font-size: 0.9rem;
+        }
+
+        /* Waiting Room Panel */
+        .waiting-room {
+            background: var(--meet-surface);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .waiting-room-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .waiting-count {
+            background: var(--meet-blue);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+
+        .waiting-user {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .waiting-user-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .admit-btn {
+            background: var(--meet-green);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .deny-btn {
+            background: transparent;
+            border: 1px solid #9aa0a6;
+            color: #9aa0a6;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .deny-btn:hover {
+            border-color: var(--meet-red);
+            color: var(--meet-red);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--meet-hover);
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.toggle-slider {
+            background-color: var(--meet-blue);
+        }
+
+        input:checked+.toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Notifications */
+        .notification-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .notification {
+            background: var(--meet-surface);
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--meet-green);
+        }
+
+        .notification.warning {
+            border-left: 4px solid var(--meet-yellow);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--meet-red);
+        }
+
+        .notification.info {
+            border-left: 4px solid var(--meet-blue);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Share Screen Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--meet-surface);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .side-panel {
+                position: fixed;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 100;
+            }
+
+            .meeting-header {
+                padding: 8px;
+            }
+
+            .meeting-time {
+                display: none;
+            }
+
+            .control-btn {
+                width: 44px;
+                height: 44px;
+            }
+
+            .avatar-circle {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-dark">
-    <div class="meeting-header bg-dark border-bottom border-secondary">
-        <div class="container-fluid d-flex justify-content-between align-items-center py-3">
-            <div>
-                <h5 class="text-white mb-0"><i class="bi bi-camera-video-fill me-2"></i>ConferMeet Room</h5>
+<body>
+    <div class="meeting-container">
+        <!-- Header -->
+        <header class="meeting-header">
+            <div class="meeting-info">
+                <span class="meeting-title" th:text="${meetingTitle}">Meeting</span>
+                <span class="meeting-code-badge" id="meetingCodeBadge" onclick="copyMeetingCode()"
+                    th:text="${meetingCode}" title="Click to copy">Loading...</span>
+                <span class="meeting-time" id="meetingTime">00:00:00</span>
             </div>
-            <div class="meeting-code text-white">
-                <small>Meeting Code: <span class="badge bg-success" id="meetingCodeBadge"
-                        th:text="${meetingCode}">Loading...</span></small>
-                <br>
-                <small th:if="${meetingTitle}" class="text-muted">Title: <span th:text="${meetingTitle}"></span></small>
-            </div>
-            <div class="d-flex align-items-center gap-3">
-                <!-- Theme Toggle Button -->
-                <button class="theme-toggle-btn" id="themeToggle" title="Toggle Dark/Light Mode"
-                    aria-label="Toggle theme">
-                    <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
-                        </path>
-                    </svg>
-                    <svg class="moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
-                        </path>
-                    </svg>
+            <div class="header-actions">
+                <button class="header-btn" id="themeToggle" title="Toggle theme">
+                    <i class="bi bi-moon"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="endMeeting()">
-                    <i class="bi bi-telephone-x me-1"></i>End Meeting
+                <button class="header-btn" onclick="toggleFullscreen()" title="Fullscreen">
+                    <i class="bi bi-fullscreen"></i>
+                </button>
+                <button class="header-btn" data-bs-toggle="modal" data-bs-target="#meetingInfoModal"
+                    title="Meeting info">
+                    <i class="bi bi-info-circle"></i>
                 </button>
             </div>
-        </div>
-    </div>
+        </header>
 
-    <div class="container-fluid meeting-container py-4">
-        <div class="row h-100">
-            <div class="col-lg-9 mb-4 mb-lg-0">
-                <div class="video-grid">
-                    <div class="main-video position-relative">
-                        <div class="video-placeholder bg-secondary rounded-3 d-flex align-items-center justify-content-center"
-                            style="height: 100%; min-height: 500px;">
-                            <div class="text-center text-white">
-                                <div class="avatar-large mb-3">
-                                    <i class="bi bi-person-circle" style="font-size: 5rem;"></i>
-                                </div>
-                                <p th:text="${username}"></p>
-                            </div>
+        <!-- Video Area -->
+        <div class="video-area">
+            <div class="video-grid grid-1" id="videoGrid">
+                <!-- Local video tile -->
+                <div class="video-tile" id="localTile" data-participant-id="local">
+                    <video id="localVideo" autoplay muted playsinline></video>
+                    <div class="video-placeholder" id="localPlaceholder">
+                        <div class="avatar-circle" th:text="${#strings.substring(username, 0, 1)}">U</div>
+                        <span class="participant-name" th:text="${username}">You</span>
+                    </div>
+                    <div class="tile-overlay-top">
+                        <div class="tile-badges">
+                            <span class="tile-badge host" th:if="${isHost}"><i class="bi bi-star-fill"></i> Host</span>
                         </div>
-                        <div class="video-badge position-absolute top-0 start-0 m-3">
-                            <span class="badge bg-danger"><i class="bi bi-dot-fill"></i> Recording</span>
+                    </div>
+                    <div class="tile-overlay-bottom">
+                        <span class="tile-name">You</span>
+                        <div class="tile-media-status">
+                            <span class="media-indicator off" id="localMicIndicator"><i
+                                    class="bi bi-mic-mute-fill"></i></span>
+                            <span class="media-indicator off" id="localCamIndicator"><i
+                                    class="bi bi-camera-video-off-fill"></i></span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-3">
-                <ul class="nav nav-tabs bg-secondary rounded-top-3" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active text-white" data-bs-toggle="tab" href="#chat">
-                            <i class="bi bi-chat-dots me-2"></i>Chat
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" data-bs-toggle="tab" href="#participants">
-                            <i class="bi bi-people me-2"></i>People
-                        </a>
-                    </li>
-                </ul>
-
-                <div class="tab-content bg-dark rounded-bottom-3 border border-secondary border-top-0 p-3"
-                    style="height: 400px; overflow-y: auto;">
-                    <div id="chat" class="tab-pane fade show active">
-                        <div class="messages-container mb-3" id="messagesContainer"
-                            style="max-height: 320px; overflow-y: auto;">
-                            <div class="mb-3">
-                                <small class="text-muted">John Doe</small>
-                                <div class="bg-secondary p-2 rounded-2 mt-1">
-                                    <small class="text-white">Hey everyone! Let's begin the meeting.</small>
-                                </div>
+            <!-- Side Panel -->
+            <aside class="side-panel" id="sidePanel">
+                <div class="panel-header">
+                    <span class="panel-title" id="panelTitle">Participants</span>
+                    <button class="panel-close" onclick="closeSidePanel()">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <div class="panel-content">
+                    <!-- Participants Panel -->
+                    <div id="participantsPanel">
+                        <!-- Host Controls (visible only to host) -->
+                        <div class="host-controls" id="hostControls" th:if="${isHost}">
+                            <div class="host-controls-title">
+                                <i class="bi bi-shield-check"></i>
+                                <span>Host Controls</span>
+                            </div>
+                            <div class="host-control-item">
+                                <span class="host-control-label">Enable waiting room</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="waitingRoomToggle" onchange="toggleWaitingRoom()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="host-control-item">
+                                <span class="host-control-label">Lock meeting</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="lockMeetingToggle" onchange="toggleLockMeeting()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="host-control-item">
+                                <button class="btn btn-sm btn-outline-danger w-100" onclick="muteAllParticipants()">
+                                    <i class="bi bi-mic-mute me-2"></i>Mute all
+                                </button>
                             </div>
                         </div>
-                        <div class="input-group mt-2">
-                            <input type="text" id="messageInput"
-                                class="form-control form-control-sm bg-secondary text-white border-secondary"
-                                placeholder="Type a message...">
-                            <button class="btn btn-primary btn-sm" type="button" id="sendBtn">
-                                <i class="bi bi-send"></i>
+
+                        <!-- Waiting Room -->
+                        <div class="waiting-room" id="waitingRoom" style="display: none;">
+                            <div class="waiting-room-title">
+                                <span><i class="bi bi-hourglass-split me-2"></i>Waiting Room</span>
+                                <span class="waiting-count" id="waitingCount">0</span>
+                            </div>
+                            <div id="waitingList"></div>
+                            <button class="btn btn-sm btn-success w-100 mt-2" onclick="admitAll()" id="admitAllBtn">
+                                <i class="bi bi-check-all me-1"></i>Admit all
                             </button>
                         </div>
+
+                        <!-- Participants List -->
+                        <div class="participants-list" id="participantsList">
+                            <!-- Will be populated dynamically -->
+                        </div>
                     </div>
 
-                    <div id="participants" class="tab-pane fade">
-                        <div class="participants-list">
-                            <div
-                                class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-secondary">
-                                <span class="text-white small fw-bold">Participants</span>
-                                <i class="bi bi-person-plus text-white" role="button"></i>
-                            </div>
-                            <div class="participant-item mb-3">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-person-circle text-success me-2"></i>
-                                    <span class="text-white small fw-bold">You (Host)</span>
-                                </div>
-                            </div>
+                    <!-- Chat Panel -->
+                    <div id="chatPanel" style="display: none; height: 100%; display: flex; flex-direction: column;">
+                        <div class="chat-messages" id="chatMessages">
+                            <!-- Messages will be added here -->
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="meeting-controls bg-dark border-top border-secondary">
-        <div class="container-fluid py-3">
-            <div class="d-flex justify-content-center gap-3 flex-wrap">
-                <button class="btn btn-light rounded-circle control-btn" id="micBtn" onclick="toggleMic()"
-                    title="Mute/Unmute">
-                    <i class="bi bi-mic-fill"></i>
-                </button>
-
-                <button class="btn btn-light rounded-circle control-btn" id="cameraBtn" onclick="toggleCamera()"
-                    title="Turn camera off/on">
-                    <i class="bi bi-camera-video-fill"></i>
-                </button>
-
-                <button class="btn btn-light rounded-circle control-btn" id="shareBtn" onclick="shareScreen()"
-                    title="Share your screen">
-                    <i class="bi bi-window-stack"></i>
-                </button>
-
-                <button class="btn btn-light rounded-circle control-btn" id="handBtn" onclick="raiseHand()"
-                    title="Raise your hand">
-                    <i class="bi bi-hand-thumbs-up"></i>
-                </button>
-
-                <button class="btn btn-light rounded-circle control-btn" id="shareLinkBtn" data-bs-toggle="modal"
-                    data-bs-target="#shareMeetingModal" title="Share meeting invite">
-                    <i class="bi bi-share"></i>
-                </button>
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-light rounded-circle control-btn" data-bs-toggle="dropdown">
-                        <i class="bi bi-three-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-clock-history me-2"></i>Settings</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Audio Settings</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-info-circle me-2"></i>Meeting Info</a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-telephone-x me-2"></i>Leave
-                                Meeting</a></li>
-                    </ul>
+                <!-- Chat Input Area -->
+                <div class="chat-input-area" id="chatInputArea" style="display: none;">
+                    <div class="chat-input-wrapper">
+                        <input type="text" class="chat-input" id="messageInput"
+                            placeholder="Send a message to everyone">
+                        <button class="chat-send-btn" id="sendMessageBtn" onclick="sendChatMessage()">
+                            <i class="bi bi-send-fill"></i>
+                        </button>
+                    </div>
                 </div>
+            </aside>
+        </div>
 
-                <button class="btn btn-danger rounded-circle control-btn ms-lg-5" onclick="endMeeting()"
-                    title="End meeting">
-                    <i class="bi bi-telephone-x"></i>
+        <!-- Control Bar -->
+        <footer class="control-bar">
+            <div class="control-group">
+                <button class="control-btn off" id="micBtn" onclick="toggleMic()" title="Microphone (Ctrl+M)">
+                    <i class="bi bi-mic-mute-fill"></i>
+                </button>
+                <button class="control-btn off" id="camBtn" onclick="toggleCamera()" title="Camera (Ctrl+E)">
+                    <i class="bi bi-camera-video-off-fill"></i>
                 </button>
             </div>
-        </div>
+
+            <div class="control-group">
+                <button class="control-btn" id="screenShareBtn" onclick="toggleScreenShare()"
+                    title="Share screen (Ctrl+D)">
+                    <i class="bi bi-display"></i>
+                </button>
+                <button class="control-btn" id="handBtn" onclick="toggleHand()" title="Raise hand (Ctrl+H)">
+                    <i class="bi bi-hand-index-thumb"></i>
+                </button>
+            </div>
+
+            <button class="control-btn end-call" onclick="leaveMeeting()" title="Leave meeting">
+                <i class="bi bi-telephone-x-fill"></i>
+            </button>
+
+            <div class="control-group">
+                <button class="control-btn" id="chatBtn" onclick="togglePanel('chat')" title="Chat">
+                    <i class="bi bi-chat-dots"></i>
+                </button>
+                <button class="control-btn" id="participantsBtn" onclick="togglePanel('participants')"
+                    title="Participants">
+                    <i class="bi bi-people"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary"
+                        id="participantCount" style="font-size: 0.6rem;">1</span>
+                </button>
+            </div>
+
+            <div class="control-group more-dropdown">
+                <button class="control-btn" id="moreBtn" onclick="toggleMoreMenu()" title="More options">
+                    <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <div class="dropdown-menu-custom" id="moreMenu">
+                    <div class="dropdown-item-custom" onclick="openShareModal()">
+                        <i class="bi bi-share"></i>
+                        <span>Share meeting</span>
+                    </div>
+                    <div class="dropdown-item-custom" onclick="toggleRecording()">
+                        <i class="bi bi-record-circle"></i>
+                        <span id="recordingLabel">Start recording</span>
+                    </div>
+                    <div class="dropdown-item-custom" onclick="openSettings()">
+                        <i class="bi bi-gear"></i>
+                        <span>Settings</span>
+                    </div>
+                    <div class="dropdown-item-custom" onclick="viewShortcuts()">
+                        <i class="bi bi-keyboard"></i>
+                        <span>Keyboard shortcuts</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
 
     <!-- Share Meeting Modal -->
-    <div class="modal fade" id="shareMeetingModal" tabindex="-1" aria-labelledby="shareMeetingModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="shareModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-content bg-dark text-white">
                 <div class="modal-header border-secondary">
-                    <h5 class="modal-title" id="shareMeetingModalLabel">
-                        <i class="bi bi-share-fill me-2 text-primary"></i>Share Meeting Invite
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                    <h5 class="modal-title"><i class="bi bi-share me-2"></i>Share Meeting</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Meeting Link Section -->
-                    <div class="mb-4">
-                        <label class="form-label text-muted small">Meeting Link</label>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Meeting Link</label>
                         <div class="input-group">
                             <input type="text" class="form-control bg-secondary border-secondary text-white"
-                                id="meetingLinkInput" readonly>
-                            <button class="btn btn-primary" type="button" onclick="copyMeetingLink()" id="copyLinkBtn">
-                                <i class="bi bi-clipboard me-1"></i>Copy
+                                id="shareLinkInput" readonly>
+                            <button class="btn btn-primary" onclick="copyShareLink()">
+                                <i class="bi bi-clipboard"></i>
                             </button>
                         </div>
                     </div>
-
-                    <!-- Meeting Code Section -->
-                    <div class="mb-4">
-                        <label class="form-label text-muted small">Meeting Code</label>
-                        <div class="d-flex align-items-center gap-3">
-                            <span class="badge bg-success fs-5 px-3 py-2" id="meetingCodeDisplay"
-                                th:text="${meetingCode}">Loading...</span>
-                            <button class="btn btn-outline-light btn-sm" onclick="copyMeetingCode()">
-                                <i class="bi bi-copy"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <hr class="border-secondary">
-
-                    <!-- Share Options -->
                     <div class="mb-3">
-                        <label class="form-label text-muted small">Share via</label>
-                        <div class="d-flex gap-2 flex-wrap">
-                            <button class="btn btn-outline-light flex-fill" onclick="shareViaEmail()">
-                                <i class="bi bi-envelope me-2"></i>Email
-                            </button>
-                            <button class="btn btn-outline-light flex-fill" onclick="shareViaWhatsApp()">
-                                <i class="bi bi-whatsapp me-2"></i>WhatsApp
-                            </button>
-                            <button class="btn btn-outline-light flex-fill" onclick="shareViaTwitter()">
-                                <i class="bi bi-twitter-x me-2"></i>Twitter
+                        <label class="form-label small text-muted">Meeting Code</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-success fs-6 px-3 py-2" id="shareCodeDisplay"
+                                th:text="${meetingCode}">ABC-123</span>
+                            <button class="btn btn-sm btn-outline-light" onclick="copyMeetingCode()">
+                                <i class="bi bi-clipboard"></i>
                             </button>
                         </div>
                     </div>
-
-                    <!-- Invite Tips -->
-                    <div class="alert alert-info bg-info bg-opacity-10 border-info text-info-emphasis small">
-                        <i class="bi bi-lightbulb me-2"></i>
-                        <strong>Tip:</strong> Share the meeting code with participants. They can join at any time by
-                        entering the code on the homepage.
+                    <hr class="border-secondary">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-outline-light flex-fill" onclick="shareVia('email')">
+                            <i class="bi bi-envelope me-2"></i>Email
+                        </button>
+                        <button class="btn btn-outline-light flex-fill" onclick="shareVia('whatsapp')">
+                            <i class="bi bi-whatsapp me-2"></i>WhatsApp
+                        </button>
                     </div>
-                </div>
-                <div class="modal-footer border-secondary">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Meeting Info Modal -->
+    <div class="modal fade" id="meetingInfoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title"><i class="bi bi-info-circle me-2"></i>Meeting Info</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <span class="small text-muted d-block">Meeting Title</span>
+                        <span class="fw-bold" th:text="${meetingTitle}">Meeting</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="small text-muted d-block">Meeting Code</span>
+                        <span class="badge bg-success fs-6" th:text="${meetingCode}">ABC-123</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="small text-muted d-block">Your Role</span>
+                        <span th:if="${isHost}" class="badge bg-warning text-dark">Host</span>
+                        <span th:unless="${isHost}" class="badge bg-secondary">Participant</span>
+                    </div>
+                    <div>
+                        <span class="small text-muted d-block">Duration</span>
+                        <span id="durationDisplay">00:00:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden data elements -->
+    <input type="hidden" id="usernameData" th:value="${username}">
+    <input type="hidden" id="isHostData" th:value="${isHost}">
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/meeting.js"></script>
+    <script src="/js/meeting-webrtc.js"></script>
     <script src="/js/theme-toggle.js"></script>
-    <script>
-        // Initialize meeting link on modal open
-        document.getElementById('shareMeetingModal').addEventListener('show.bs.modal', function () {
-            const meetingCode = document.getElementById('meetingCodeBadge').textContent.trim();
-            const meetingLink = `${window.location.origin}/index?join=${encodeURIComponent(meetingCode)}`;
-            document.getElementById('meetingLinkInput').value = meetingLink;
-            document.getElementById('meetingCodeDisplay').textContent = meetingCode;
-        });
-
-        function copyMeetingLink() {
-            const linkInput = document.getElementById('meetingLinkInput');
-            const copyBtn = document.getElementById('copyLinkBtn');
-
-            navigator.clipboard.writeText(linkInput.value).then(() => {
-                copyBtn.innerHTML = '<i class="bi bi-check2 me-1"></i>Copied!';
-                copyBtn.classList.remove('btn-primary');
-                copyBtn.classList.add('btn-success');
-
-                setTimeout(() => {
-                    copyBtn.innerHTML = '<i class="bi bi-clipboard me-1"></i>Copy';
-                    copyBtn.classList.remove('btn-success');
-                    copyBtn.classList.add('btn-primary');
-                }, 2000);
-            });
-        }
-
-        function copyMeetingCode() {
-            const code = document.getElementById('meetingCodeDisplay').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                showNotification('Meeting code copied!', 'success');
-            });
-        }
-
-        function shareViaEmail() {
-            const meetingCode = document.getElementById('meetingCodeDisplay').textContent;
-            const meetingLink = document.getElementById('meetingLinkInput').value;
-            const subject = encodeURIComponent('Join my ConferMeet meeting');
-            const body = encodeURIComponent(`Hi,\n\nI'd like to invite you to join my video meeting.\n\nMeeting Link: ${meetingLink}\nMeeting Code: ${meetingCode}\n\nSee you there!`);
-            window.open(`mailto:?subject=${subject}&body=${body}`);
-        }
-
-        function shareViaWhatsApp() {
-            const meetingLink = document.getElementById('meetingLinkInput').value;
-            const text = encodeURIComponent(`Join my ConferMeet meeting: ${meetingLink}`);
-            window.open(`https://wa.me/?text=${text}`, '_blank');
-        }
-
-        function shareViaTwitter() {
-            const meetingLink = document.getElementById('meetingLinkInput').value;
-            const text = encodeURIComponent(`Join my video meeting on ConferMeet!`);
-            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(meetingLink)}`, '_blank');
-        }
-    </script>
 </body>
 
 </html>

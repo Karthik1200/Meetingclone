@@ -51,9 +51,12 @@ public class UserController {
     }
 
     @GetMapping("/index")
-    public String indexPage(HttpSession session, Model model) {
+    public String indexPage(@RequestParam(required = false) String join, HttpSession session, Model model) {
         Boolean isLoggedIn = (Boolean) session.getAttribute("isLoggedIn");
         if (isLoggedIn == null || !isLoggedIn) {
+            if (join != null) {
+                session.setAttribute("onLoginRedirect", "/index?join=" + join);
+            }
             return "redirect:/loginpage";
         }
 
@@ -65,6 +68,9 @@ public class UserController {
         model.addAttribute("username", username);
         model.addAttribute("role", role);
         model.addAttribute("isAdmin", "ADMIN".equals(role));
+        if (join != null) {
+            model.addAttribute("joinCode", join);
+        }
 
         return "index";
     }
@@ -269,9 +275,16 @@ public class UserController {
             session.setAttribute("isLoggedIn", true);
             session.setAttribute("fullName", user.getFullName());
 
+            String redirectUrl = (String) session.getAttribute("onLoginRedirect");
+            if (redirectUrl != null) {
+                session.removeAttribute("onLoginRedirect");
+                response.put("redirectUrl", redirectUrl);
+            } else {
+                response.put("redirectUrl", "ADMIN".equals(user.getRole()) ? "/admin" : "/index");
+            }
+
             response.put("success", true);
             response.put("message", "Login successful");
-            response.put("redirectUrl", "ADMIN".equals(user.getRole()) ? "/admin" : "/index");
 
             return ResponseEntity.ok(response);
 
@@ -333,6 +346,12 @@ public class UserController {
                     session.setAttribute("role", user.getRole());
                     session.setAttribute("isLoggedIn", true);
                     session.setAttribute("fullName", user.getFullName());
+
+                    String redirectUrl = (String) session.getAttribute("onLoginRedirect");
+                    if (redirectUrl != null) {
+                        session.removeAttribute("onLoginRedirect");
+                        return "redirect:" + redirectUrl;
+                    }
 
                     if ("ADMIN".equals(user.getRole())) {
                         return "redirect:/admin";

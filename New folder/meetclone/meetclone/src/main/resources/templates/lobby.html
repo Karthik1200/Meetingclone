@@ -5,152 +5,426 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meeting Lobby - ConferMeet</title>
+    <meta name="description" content="ConferMeet lobby - Prepare before joining your meeting">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/theme.css">
     <style>
         :root {
-            --primary-color: #0d9488;
-            --primary-light: #14b8a6;
-            --primary-dark: #0f766e;
-            --dark-bg: #1f2937;
-            --secondary-bg: #374151;
-            --accent-color: #06b6d4;
+            --meet-bg: #202124;
+            --meet-surface: #3c4043;
+            --meet-hover: #5f6368;
+            --meet-primary: #8ab4f8;
+            --meet-green: #34a853;
+            --meet-red: #ea4335;
+            --meet-yellow: #fbbc04;
+            --meet-blue: #4285f4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            background: #f8fafc;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .lobby-container {
-            max-width: 1200px;
-            margin: 50px auto;
-            padding: 20px;
-        }
-
-        .preview-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        .video-preview {
-            background: var(--dark-bg);
-            border-radius: 15px;
-            aspect-ratio: 16/9;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        .video-placeholder {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
             color: white;
         }
 
-        .avatar-preview {
+        /* Navbar */
+        .navbar {
+            background: rgba(32, 33, 36, 0.95) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-icon {
+            background: linear-gradient(135deg, var(--meet-blue), var(--meet-green));
+            padding: 8px;
+            border-radius: 10px;
+            display: flex;
+        }
+
+        /* Main Container */
+        .lobby-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: calc(100vh - 70px);
+            display: flex;
+            align-items: center;
+        }
+
+        .lobby-content {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 40px;
+            width: 100%;
+        }
+
+        /* Preview Card */
+        .preview-card {
+            background: rgba(60, 64, 67, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .preview-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .preview-title i {
+            color: var(--meet-blue);
+        }
+
+        /* Video Preview */
+        .video-preview-container {
+            position: relative;
+            background: var(--meet-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            margin-bottom: 24px;
+        }
+
+        .video-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .avatar-large {
             width: 120px;
             height: 120px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            background: linear-gradient(135deg, var(--meet-blue), #8e44ad);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 3rem;
-            color: white;
-            margin: 0 auto 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            box-shadow: 0 8px 32px rgba(66, 133, 244, 0.3);
         }
 
+        .camera-status {
+            font-size: 0.9rem;
+            color: #9aa0a6;
+        }
+
+        /* Control Buttons */
         .control-group {
             display: flex;
-            gap: 15px;
             justify-content: center;
-            margin: 20px 0;
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
         .control-btn {
-            width: 60px;
-            height: 60px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             border: none;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: #f0f0f0;
-            color: #333;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            position: relative;
         }
 
         .control-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
         }
 
         .control-btn.active {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
-            color: white;
+            background: var(--meet-blue);
+            box-shadow: 0 4px 20px rgba(66, 133, 244, 0.4);
         }
 
-        .control-btn.muted {
-            background: #ea4335;
-            color: white;
+        .control-btn.off {
+            background: var(--meet-red);
+            box-shadow: 0 4px 20px rgba(234, 67, 53, 0.3);
         }
 
+        .control-btn .btn-label {
+            position: absolute;
+            bottom: -24px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+
+        /* Settings Panel */
         .settings-panel {
-            background: #f8f9fa;
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
             padding: 20px;
-            margin-top: 20px;
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .settings-panel.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .device-select {
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
 
-        .meeting-info {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        .device-select label {
+            display: block;
+            font-size: 0.85rem;
+            color: #9aa0a6;
+            margin-bottom: 6px;
+        }
+
+        .device-select select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
+            font-size: 0.9rem;
         }
 
-        .btn-join {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
-            border: none;
-            padding: 15px 50px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            border-radius: 50px;
-            color: white;
-            transition: all 0.3s;
+        .device-select select:focus {
+            outline: none;
+            border-color: var(--meet-blue);
         }
 
-        .btn-join:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(13, 148, 136, 0.4);
-            color: white;
+        .device-select select option {
+            background: var(--meet-surface);
         }
 
-        .ready-check {
+        /* Ready Status */
+        .ready-status {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin: 20px 0;
-            padding: 15px;
-            background: #e8f5e9;
-            border-radius: 10px;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(52, 168, 83, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(52, 168, 83, 0.3);
+            margin-bottom: 24px;
         }
 
-        .participant-list {
-            max-height: 300px;
+        .ready-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--meet-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .ready-text h4 {
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .ready-text p {
+            font-size: 0.8rem;
+            color: #9aa0a6;
+            margin: 0;
+        }
+
+        /* Join Button */
+        .join-btn {
+            width: 100%;
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, var(--meet-blue), #5a9cff);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .join-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(66, 133, 244, 0.4);
+        }
+
+        .join-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Info Card */
+        .info-card {
+            background: rgba(60, 64, 67, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Meeting Info */
+        .meeting-info-header {
+            background: linear-gradient(135deg, var(--meet-blue), #8e44ad);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .meeting-info-header h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+        }
+
+        .meeting-title-display {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .meeting-code-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .meeting-code {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .host-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--meet-yellow);
+            color: #000;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        /* Participants Section */
+        .participants-section {
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .participant-count {
+            background: var(--meet-blue);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+
+        .admit-all-btn {
+            background: var(--meet-green);
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            color: white;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .admit-all-btn:hover {
+            background: #2d9348;
+        }
+
+        .participants-list {
+            max-height: 200px;
             overflow-y: auto;
         }
 
@@ -158,366 +432,611 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px;
-            margin-bottom: 10px;
-            background: #f8f9fa;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
+            margin-bottom: 8px;
         }
 
-        .host-badge {
-            background: #ffc107;
-            color: #000;
-            padding: 2px 8px;
-            border-radius: 5px;
-            font-size: 0.75rem;
+        .participant-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .participant-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--meet-blue), #8e44ad);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
             font-weight: 600;
         }
+
+        .participant-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .participant-status {
+            font-size: 0.75rem;
+            color: #9aa0a6;
+        }
+
+        .status-badge {
+            background: var(--meet-green);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Host Controls */
+        .host-controls {
+            background: linear-gradient(135deg, rgba(251, 188, 4, 0.1), rgba(234, 67, 53, 0.1));
+            border: 1px solid rgba(251, 188, 4, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .host-controls-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--meet-yellow);
+        }
+
+        .host-control-btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(251, 188, 4, 0.3);
+            background: transparent;
+            color: var(--meet-yellow);
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .host-control-btn:hover {
+            background: rgba(251, 188, 4, 0.1);
+        }
+
+        /* Tips */
+        .tips-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .tips-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--meet-yellow);
+        }
+
+        .tips-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tips-list li {
+            font-size: 0.85rem;
+            color: #9aa0a6;
+            padding: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tips-list li::before {
+            content: '•';
+            color: var(--meet-blue);
+        }
+
+        /* Leave Button */
+        .leave-btn {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(234, 67, 53, 0.5);
+            border-radius: 50px;
+            background: transparent;
+            color: var(--meet-red);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .leave-btn:hover {
+            background: rgba(234, 67, 53, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .lobby-content {
+                grid-template-columns: 1fr;
+            }
+
+            .lobby-container {
+                padding: 20px;
+            }
+        }
+
+        /* Notifications */
+        .notification-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .notification {
+            background: var(--meet-surface);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--meet-green);
+        }
+
+        .notification.warning {
+            border-left: 4px solid var(--meet-yellow);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--meet-red);
+        }
+
+        .notification.info {
+            border-left: 4px solid var(--meet-blue);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
     </style>
-    <link rel="stylesheet" href="/css/theme.css">
 </head>
 
 <body>
-    <!-- Navigation with Theme Toggle -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm"
-        style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000;">
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark sticky-top">
         <div class="container-fluid px-4">
-            <a class="navbar-brand d-flex align-items-center" href="/index">
-                <i class="bi bi-camera-video-fill me-2" style="font-size: 24px; color: var(--primary-color);"></i>
-                <span style="font-weight: 600; color: #1f2937;">ConferMeet</span>
+            <a class="navbar-brand text-white" href="/index">
+                <span class="brand-icon">
+                    <i class="bi bi-camera-video-fill"></i>
+                </span>
+                ConferMeet
             </a>
-            <div class="d-flex align-items-center">
-                <!-- Theme Toggle Button -->
-                <button class="theme-toggle-btn me-3" id="themeToggle" title="Toggle Dark/Light Mode"
-                    aria-label="Toggle theme">
-                    <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
-                        </path>
-                    </svg>
-                    <svg class="moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
-                        </path>
-                    </svg>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-link text-white" id="themeToggle" title="Toggle theme">
+                    <i class="bi bi-moon-fill"></i>
                 </button>
-                <span class="text-muted me-3" th:text="'Hi, ' + ${username}">Hi, User</span>
+                <span class="text-muted" th:text="'Hi, ' + ${username}">Hi, User</span>
             </div>
         </div>
     </nav>
 
-    <div class="lobby-container" style="margin-top: 70px;">
-        <div class="row g-4">
-            <div class="col-lg-8">
-                <div class="preview-card">
-                    <h2 class="mb-4"><i class="bi bi-camera-video me-2 text-primary"></i>Ready to join?</h2>
+    <!-- Main Content -->
+    <div class="lobby-container">
+        <div class="lobby-content">
+            <!-- Preview Card -->
+            <div class="preview-card">
+                <h2 class="preview-title">
+                    <i class="bi bi-camera-video"></i>
+                    Ready to join?
+                </h2>
 
-                    <div class="video-preview">
-                        <div class="video-placeholder">
-                            <div class="text-center">
-                                <div class="avatar-preview">
-                                    <i class="bi bi-person-fill"></i>
-                                </div>
-                                <h4 th:text="${username}">Your Name</h4>
-                                <p class="text-muted">Camera is off</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="control-group">
-                        <button class="control-btn muted" id="micBtn" onclick="toggleMic()" title="Microphone">
-                            <i class="bi bi-mic-mute-fill"></i>
-                        </button>
-                        <button class="control-btn muted" id="camBtn" onclick="toggleCamera()" title="Camera">
-                            <i class="bi bi-camera-video-off-fill"></i>
-                        </button>
-                        <button class="control-btn" id="settingsBtn" onclick="toggleSettings()" title="Settings">
-                            <i class="bi bi-gear-fill"></i>
-                        </button>
-                    </div>
-
-                    <div class="settings-panel" id="settingsPanel" style="display: none;">
-                        <h5 class="mb-3"><i class="bi bi-gear me-2"></i>Audio & Video Settings</h5>
-
-                        <div class="device-select">
-                            <label class="form-label fw-bold">Microphone</label>
-                            <select class="form-select">
-                                <option>Default Microphone</option>
-                                <option>Built-in Microphone</option>
-                            </select>
-                        </div>
-
-                        <div class="device-select">
-                            <label class="form-label fw-bold">Camera</label>
-                            <select class="form-select">
-                                <option>Default Camera</option>
-                                <option>Built-in Camera</option>
-                            </select>
-                        </div>
-
-                        <div class="device-select">
-                            <label class="form-label fw-bold">Speaker</label>
-                            <select class="form-select">
-                                <option>Default Speaker</option>
-                                <option>Built-in Speaker</option>
-                            </select>
-                        </div>
-
-                        <button class="btn btn-sm btn-primary" onclick="testAudio()">
-                            <i class="bi bi-volume-up me-2"></i>Test Speaker
-                        </button>
-                    </div>
-
-                    <div class="ready-check">
-                        <i class="bi bi-check-circle-fill text-success" style="font-size: 1.5rem;"></i>
-                        <div>
-                            <strong>You're all set!</strong>
-                            <p class="mb-0 text-muted small">Click "Join Now" when you're ready to enter the meeting</p>
-                        </div>
-                    </div>
-
-                    <div class="text-center">
-                        <form action="/meeting" method="GET">
-                            <button type="submit" class="btn btn-join">
-                                <i class="bi bi-box-arrow-in-right me-2"></i>Join Now
-                            </button>
-                        </form>
+                <!-- Video Preview -->
+                <div class="video-preview-container">
+                    <video id="videoPreview" class="video-preview" autoplay muted playsinline></video>
+                    <div class="video-placeholder" id="videoPlaceholder">
+                        <div class="avatar-large" th:text="${#strings.substring(username, 0, 1)}">U</div>
+                        <span th:text="${username}">Your Name</span>
+                        <span class="camera-status" id="cameraStatus">Camera is off</span>
                     </div>
                 </div>
+
+                <!-- Controls -->
+                <div class="control-group">
+                    <button class="control-btn off" id="micBtn" onclick="toggleMic()" title="Microphone">
+                        <i class="bi bi-mic-mute-fill"></i>
+                        <span class="btn-label">Mic</span>
+                    </button>
+                    <button class="control-btn off" id="camBtn" onclick="toggleCamera()" title="Camera">
+                        <i class="bi bi-camera-video-off-fill"></i>
+                        <span class="btn-label">Camera</span>
+                    </button>
+                    <button class="control-btn" id="settingsBtn" onclick="toggleSettings()" title="Settings">
+                        <i class="bi bi-gear-fill"></i>
+                        <span class="btn-label">Settings</span>
+                    </button>
+                </div>
+
+                <!-- Settings Panel -->
+                <div class="settings-panel" id="settingsPanel">
+                    <div class="device-select">
+                        <label>Microphone</label>
+                        <select id="micSelect">
+                            <option>Loading devices...</option>
+                        </select>
+                    </div>
+                    <div class="device-select">
+                        <label>Camera</label>
+                        <select id="camSelect">
+                            <option>Loading devices...</option>
+                        </select>
+                    </div>
+                    <div class="device-select">
+                        <label>Speaker</label>
+                        <select id="speakerSelect">
+                            <option>System Default</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-sm btn-outline-light" onclick="testAudio()">
+                        <i class="bi bi-volume-up me-2"></i>Test Speaker
+                    </button>
+                </div>
+
+                <!-- Ready Status -->
+                <div class="ready-status">
+                    <div class="ready-icon">
+                        <i class="bi bi-check-lg"></i>
+                    </div>
+                    <div class="ready-text">
+                        <h4>You're all set!</h4>
+                        <p>Click "Join Now" when you're ready to enter the meeting</p>
+                    </div>
+                </div>
+
+                <!-- Join Button -->
+                <form action="/meeting" method="GET">
+                    <input type="hidden" id="audioEnabled" name="audioEnabled">
+                    <input type="hidden" id="videoEnabled" name="videoEnabled">
+                    <button type="submit" class="join-btn" onclick="prepareJoin()">
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        Join Now
+                    </button>
+                </form>
             </div>
 
-            <div class="col-lg-4">
-                <div class="preview-card">
-                    <div class="meeting-info">
-                        <h4 class="mb-3"><i class="bi bi-info-circle me-2"></i>Meeting Details</h4>
-                        <div class="mb-3">
-                            <small class="text-white-50">Meeting Title</small>
-                            <h5 th:text="${meetingTitle}">Team Meeting</h5>
-                        </div>
-                        <div class="mb-3">
-                            <small class="text-white-50">Meeting Code</small>
-                            <h5 class="d-flex align-items-center">
-                                <span th:text="${meetingCode}">ABC-123-XYZ</span>
-                                <button class="btn btn-sm btn-light ms-2" onclick="copyMeetingCode()">
-                                    <i class="bi bi-clipboard"></i>
-                                </button>
-                            </h5>
-                        </div>
-                        <div th:if="${isHost}">
-                            <span class="host-badge"><i class="bi bi-star-fill me-1"></i>You are the host</span>
-                        </div>
+            <!-- Info Card -->
+            <div class="info-card">
+                <!-- Meeting Info -->
+                <div class="meeting-info-header">
+                    <h3>Meeting Details</h3>
+                    <div class="meeting-title-display" th:text="${meetingTitle}">Team Meeting</div>
+                    <div class="meeting-code-container">
+                        <span class="meeting-code" th:text="${meetingCode}">ABC-123-XYZ</span>
+                        <button class="copy-btn" onclick="copyMeetingCode()" title="Copy code">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
                     </div>
-
-                    <!-- Waiting Participants Section -->
-                    <div class="mt-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0"><i class="bi bi-people me-2"></i>In Lobby (<span id="lobbyCount">1</span>)
-                            </h5>
-                            <button th:if="${isHost}" class="btn btn-success btn-sm" onclick="admitAll()"
-                                id="admitAllBtn">
-                                <i class="bi bi-check-all me-1"></i>Admit All
-                            </button>
-                        </div>
-                        <div class="participant-list" id="participantList">
-                            <!-- Current User (You) -->
-                            <div class="participant-item">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="avatar-preview" style="width: 40px; height: 40px; font-size: 1rem;">
-                                        <i class="bi bi-person-fill"></i>
-                                    </div>
-                                    <div>
-                                        <strong th:text="${username}">You</strong>
-                                        <span th:if="${isHost}" class="badge bg-warning ms-1"
-                                            style="font-size: 0.6rem;">Host</span>
-                                        <br>
-                                        <small class="text-muted">Ready to join</small>
-                                    </div>
-                                </div>
-                                <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Ready</span>
-                            </div>
-
-                            <!-- Simulated waiting participants (for demo - would be dynamic in production) -->
-                            <div th:if="${isHost}" class="participant-item" id="waitingParticipant1"
-                                style="display: none;">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="avatar-preview"
-                                        style="width: 40px; height: 40px; font-size: 1rem; background: linear-gradient(135deg, #34a853 0%, #1e8e3e 100%);">
-                                        <i class="bi bi-person-fill"></i>
-                                    </div>
-                                    <div>
-                                        <strong>Guest User</strong>
-                                        <br>
-                                        <small class="text-muted">Requesting to join</small>
-                                    </div>
-                                </div>
-                                <div class="d-flex gap-1">
-                                    <button class="btn btn-success btn-sm"
-                                        onclick="admitParticipant('waitingParticipant1')" title="Admit">
-                                        <i class="bi bi-check"></i>
-                                    </button>
-                                    <button class="btn btn-danger btn-sm"
-                                        onclick="denyParticipant('waitingParticipant1')" title="Deny">
-                                        <i class="bi bi-x"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Host Controls -->
-                    <div th:if="${isHost}" class="mt-4 p-3 bg-warning bg-opacity-10 rounded border border-warning">
-                        <h6 class="mb-2 text-warning"><i class="bi bi-shield-check me-2"></i>Host Controls</h6>
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-outline-warning btn-sm" onclick="toggleWaitingRoom()">
-                                <i class="bi bi-hourglass-split me-2"></i>Toggle Waiting Room
-                            </button>
-                            <button class="btn btn-outline-warning btn-sm" onclick="lockMeeting()">
-                                <i class="bi bi-lock me-2"></i>Lock Meeting
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 p-3 bg-light rounded">
-                        <h6 class="mb-2"><i class="bi bi-lightbulb text-warning me-2"></i>Quick Tips</h6>
-                        <ul class="small text-muted mb-0 ps-3">
-                            <li>Test your audio and video before joining</li>
-                            <li>Make sure you're in a quiet environment</li>
-                            <li>Check your internet connection</li>
-                            <li th:if="${isHost}">As host, you can admit or deny waiting participants</li>
-                        </ul>
-                    </div>
-
-                    <div class="mt-4 text-center">
-                        <a href="/index" class="btn btn-outline-danger">
-                            <i class="bi bi-x-circle me-2"></i>Leave Lobby
-                        </a>
+                    <div th:if="${isHost}">
+                        <span class="host-badge">
+                            <i class="bi bi-star-fill"></i>
+                            You are the host
+                        </span>
                     </div>
                 </div>
+
+                <!-- Participants in Lobby -->
+                <div class="participants-section">
+                    <div class="section-header">
+                        <span class="section-title">
+                            <i class="bi bi-people"></i>
+                            In Lobby
+                            <span class="participant-count" id="lobbyCount">1</span>
+                        </span>
+                        <button th:if="${isHost}" class="admit-all-btn" onclick="admitAll()" id="admitAllBtn"
+                            style="display: none;">
+                            <i class="bi bi-check-all"></i> Admit All
+                        </button>
+                    </div>
+                    <div class="participants-list" id="participantsList">
+                        <!-- Current User -->
+                        <div class="participant-item">
+                            <div class="participant-info">
+                                <div class="participant-avatar" th:text="${#strings.substring(username, 0, 1)}">U</div>
+                                <div>
+                                    <div class="participant-name">
+                                        <span th:text="${username}">You</span>
+                                        <span th:if="${isHost}" class="badge bg-warning text-dark ms-1"
+                                            style="font-size: 0.65rem;">Host</span>
+                                    </div>
+                                    <div class="participant-status">Ready to join</div>
+                                </div>
+                            </div>
+                            <span class="status-badge">
+                                <i class="bi bi-check-circle-fill"></i>
+                                Ready
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Host Controls -->
+                <div class="host-controls" th:if="${isHost}" id="hostControls">
+                    <div class="host-controls-title">
+                        <i class="bi bi-shield-check"></i>
+                        Host Controls
+                    </div>
+                    <button class="host-control-btn" onclick="toggleWaitingRoom()">
+                        <i class="bi bi-hourglass-split"></i>
+                        Enable Waiting Room
+                    </button>
+                    <button class="host-control-btn" onclick="lockMeeting()">
+                        <i class="bi bi-lock"></i>
+                        Lock Meeting
+                    </button>
+                </div>
+
+                <!-- Tips -->
+                <div class="tips-section">
+                    <div class="tips-title">
+                        <i class="bi bi-lightbulb"></i>
+                        Quick Tips
+                    </div>
+                    <ul class="tips-list">
+                        <li>Test your audio and video before joining</li>
+                        <li>Make sure you're in a quiet environment</li>
+                        <li>Check your internet connection</li>
+                        <li th:if="${isHost}">As host, you can admit or remove participants</li>
+                    </ul>
+                </div>
+
+                <!-- Leave Button -->
+                <a href="/index" class="leave-btn">
+                    <i class="bi bi-x-circle"></i>
+                    Leave Lobby
+                </a>
             </div>
         </div>
     </div>
 
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/theme-toggle.js"></script>
     <script>
-        let isMicMuted = true;
-        let isCameraOff = true;
+        let localStream = null;
+        let isMicEnabled = false;
+        let isCameraEnabled = false;
 
-        function toggleMic() {
-            const btn = document.getElementById('micBtn');
-            isMicMuted = !isMicMuted;
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDevices();
+        });
 
-            if (isMicMuted) {
-                btn.classList.add('muted');
-                btn.innerHTML = '<i class="bi bi-mic-mute-fill"></i>';
-            } else {
-                btn.classList.remove('muted');
-                btn.classList.add('active');
-                btn.innerHTML = '<i class="bi bi-mic-fill"></i>';
+        // Load available devices
+        async function loadDevices() {
+            try {
+                // Request permissions to get device labels
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+                stream.getTracks().forEach(track => track.stop());
+
+                const devices = await navigator.mediaDevices.enumerateDevices();
+
+                const micSelect = document.getElementById('micSelect');
+                const camSelect = document.getElementById('camSelect');
+                const speakerSelect = document.getElementById('speakerSelect');
+
+                micSelect.innerHTML = '';
+                camSelect.innerHTML = '';
+                speakerSelect.innerHTML = '';
+
+                devices.forEach(device => {
+                    const option = document.createElement('option');
+                    option.value = device.deviceId;
+                    option.text = device.label || `Device ${device.deviceId.slice(0, 8)}`;
+
+                    if (device.kind === 'audioinput') {
+                        micSelect.appendChild(option);
+                    } else if (device.kind === 'videoinput') {
+                        camSelect.appendChild(option);
+                    } else if (device.kind === 'audiooutput') {
+                        speakerSelect.appendChild(option);
+                    }
+                });
+            } catch (error) {
+                console.log('Permission denied or no devices available');
             }
         }
 
-        function toggleCamera() {
-            const btn = document.getElementById('camBtn');
-            isCameraOff = !isCameraOff;
+        // Toggle microphone
+        async function toggleMic() {
+            const micBtn = document.getElementById('micBtn');
 
-            if (isCameraOff) {
-                btn.classList.add('muted');
-                btn.innerHTML = '<i class="bi bi-camera-video-off-fill"></i>';
+            if (!localStream) {
+                try {
+                    localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    isMicEnabled = true;
+                } catch (error) {
+                    showNotification('Could not access microphone', 'error');
+                    return;
+                }
             } else {
-                btn.classList.remove('muted');
-                btn.classList.add('active');
-                btn.innerHTML = '<i class="bi bi-camera-video-fill"></i>';
-            }
-        }
-
-        function toggleSettings() {
-            const panel = document.getElementById('settingsPanel');
-            const btn = document.getElementById('settingsBtn');
-
-            if (panel.style.display === 'none') {
-                panel.style.display = 'block';
-                btn.classList.add('active');
-            } else {
-                panel.style.display = 'none';
-                btn.classList.remove('active');
-            }
-        }
-
-        function testAudio() {
-            const audio = new Audio('https://www.soundjay.com/button/sounds/beep-07.mp3');
-            audio.play();
-        }
-
-        function copyMeetingCode() {
-            const codeElement = document.querySelector('[th\\:text="${meetingCode}"]');
-            const code = codeElement ? codeElement.textContent : '';
-
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(code).then(() => {
-                    showNotification('Meeting code copied!');
+                isMicEnabled = !isMicEnabled;
+                localStream.getAudioTracks().forEach(track => {
+                    track.enabled = isMicEnabled;
                 });
             }
-        }
 
-        function showNotification(message, type = 'success') {
-            const notification = document.createElement('div');
-            notification.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3 shadow-lg`;
-            notification.style.zIndex = '9999';
-            notification.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle' : type === 'danger' ? 'x-circle' : 'info-circle'} me-2"></i>${message}`;
-            document.body.appendChild(notification);
-
-            setTimeout(() => notification.remove(), 3000);
-        }
-
-        // Host Controls Functions
-        function admitParticipant(participantId) {
-            const participant = document.getElementById(participantId);
-            if (participant) {
-                participant.remove();
-                updateLobbyCount();
-                showNotification('Participant admitted to the meeting', 'success');
+            if (isMicEnabled) {
+                micBtn.classList.remove('off');
+                micBtn.classList.add('active');
+                micBtn.innerHTML = '<i class="bi bi-mic-fill"></i><span class="btn-label">Mic</span>';
+                showNotification('Microphone on', 'success');
+            } else {
+                micBtn.classList.add('off');
+                micBtn.classList.remove('active');
+                micBtn.innerHTML = '<i class="bi bi-mic-mute-fill"></i><span class="btn-label">Mic</span>';
+                showNotification('Microphone off', 'warning');
             }
         }
 
-        function denyParticipant(participantId) {
-            const participant = document.getElementById(participantId);
-            if (participant) {
-                participant.remove();
-                updateLobbyCount();
-                showNotification('Participant denied access', 'warning');
+        // Toggle camera
+        async function toggleCamera() {
+            const camBtn = document.getElementById('camBtn');
+            const videoPreview = document.getElementById('videoPreview');
+            const videoPlaceholder = document.getElementById('videoPlaceholder');
+            const cameraStatus = document.getElementById('cameraStatus');
+
+            if (!localStream || !localStream.getVideoTracks().length) {
+                try {
+                    const videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    if (localStream) {
+                        videoStream.getVideoTracks().forEach(track => localStream.addTrack(track));
+                    } else {
+                        localStream = videoStream;
+                    }
+                    videoPreview.srcObject = localStream;
+                    isCameraEnabled = true;
+                } catch (error) {
+                    showNotification('Could not access camera', 'error');
+                    return;
+                }
+            } else {
+                isCameraEnabled = !isCameraEnabled;
+                localStream.getVideoTracks().forEach(track => {
+                    track.enabled = isCameraEnabled;
+                });
+            }
+
+            if (isCameraEnabled) {
+                camBtn.classList.remove('off');
+                camBtn.classList.add('active');
+                camBtn.innerHTML = '<i class="bi bi-camera-video-fill"></i><span class="btn-label">Camera</span>';
+                videoPlaceholder.style.display = 'none';
+                cameraStatus.textContent = 'Camera is on';
+                showNotification('Camera on', 'success');
+            } else {
+                camBtn.classList.add('off');
+                camBtn.classList.remove('active');
+                camBtn.innerHTML = '<i class="bi bi-camera-video-off-fill"></i><span class="btn-label">Camera</span>';
+                videoPlaceholder.style.display = 'flex';
+                cameraStatus.textContent = 'Camera is off';
+                showNotification('Camera off', 'warning');
             }
         }
 
-        function admitAll() {
-            const waitingParticipants = document.querySelectorAll('[id^="waitingParticipant"]');
-            waitingParticipants.forEach(p => p.remove());
-            updateLobbyCount();
-            showNotification('All participants admitted', 'success');
+        // Toggle settings panel
+        function toggleSettings() {
+            const settingsPanel = document.getElementById('settingsPanel');
+            const settingsBtn = document.getElementById('settingsBtn');
+
+            settingsPanel.classList.toggle('show');
+            settingsBtn.classList.toggle('active');
         }
 
-        function updateLobbyCount() {
-            const participantItems = document.querySelectorAll('.participant-item');
-            const count = participantItems.length;
-            document.getElementById('lobbyCount').textContent = count;
+        // Test audio
+        function testAudio() {
+            const audio = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU');
+            try {
+                audio.play().catch(() => {
+                    showNotification('Audio test', 'info');
+                });
+            } catch (e) {
+                showNotification('Audio test complete', 'info');
+            }
         }
 
+        // Copy meeting code
+        function copyMeetingCode() {
+            const code = document.querySelector('.meeting-code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showNotification('Meeting code copied!', 'success');
+            });
+        }
+
+        // Prepare join - set hidden inputs
+        function prepareJoin() {
+            document.getElementById('audioEnabled').value = isMicEnabled;
+            document.getElementById('videoEnabled').value = isCameraEnabled;
+        }
+
+        // Host controls
         function toggleWaitingRoom() {
-            showNotification('Waiting room toggled', 'info');
+            showNotification('Waiting room enabled', 'info');
         }
 
         function lockMeeting() {
-            showNotification('Meeting locked - no new participants can join', 'warning');
+            showNotification('Meeting will be locked after you join', 'warning');
         }
 
-        // Simulate a participant joining after 5 seconds (for demo purposes)
-        setTimeout(() => {
-            const waitingParticipant = document.getElementById('waitingParticipant1');
-            if (waitingParticipant) {
-                waitingParticipant.style.display = 'flex';
-                updateLobbyCount();
-                showNotification('A participant is waiting in the lobby', 'info');
+        function admitAll() {
+            showNotification('All participants admitted', 'success');
+        }
+
+        // Notification
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notificationContainer');
+            const icons = {
+                success: 'check-circle-fill',
+                warning: 'exclamation-triangle-fill',
+                error: 'x-circle-fill',
+                info: 'info-circle-fill'
+            };
+
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="bi bi-${icons[type]}"></i>
+                <span>${message}</span>
+            `;
+
+            container.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
             }
-        }, 5000);
+        });
     </script>
 </body>
 

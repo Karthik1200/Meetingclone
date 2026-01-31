@@ -33,11 +33,16 @@ public class User {
 
     private LocalDateTime lastLogin;
 
+    // Social login fields
+    @Column(nullable = false)
+    private String authProvider = "LOCAL"; // LOCAL, GOOGLE
+
+    private String providerId; // Google User ID
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
-
 
     public Long getId() {
         return id;
@@ -113,5 +118,21 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getAuthProvider() {
+        return authProvider;
+    }
+
+    public void setAuthProvider(String authProvider) {
+        this.authProvider = authProvider;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
     }
 }

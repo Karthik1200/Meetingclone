@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP - ConferMeet</title>
+    <meta name="description" content="Enter the verification code to reset your password">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .otp-input {
+            width: 56px;
+            height: 64px;
+            text-align: center;
+            font-size: 1.75rem;
+            font-weight: 700;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .otp-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.25);
+            background: white;
+            outline: none;
+        }
+
+        .otp-input.filled {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .otp-input.error {
+            border-color: #ef4444;
+            background: #fef2f2;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-5px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .countdown-ring {
+            stroke-dasharray: 283;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-gradient:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-gradient:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/css/theme.css">
+</head>
+
+<body class="min-h-screen gradient-bg">
+    <!-- Navigation -->
+    <nav class="bg-white/10 backdrop-blur-md fixed w-full top-0 z-50 border-b border-white/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center space-x-2">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <span class="text-2xl font-bold text-white">ConferMeet</span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- Theme Toggle Button -->
+                    <button class="theme-toggle-btn" id="themeToggle" title="Toggle Dark/Light Mode"
+                        aria-label="Toggle theme">
+                        <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                            </path>
+                        </svg>
+                        <svg class="moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                            </path>
+                        </svg>
+                    </button>
+                    <a href="/forgot" class="text-white/80 hover:text-white transition flex items-center">
+                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex items-center justify-center min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full">
+            <div class="glass-card rounded-3xl p-8 sm:p-12">
+                <!-- Icon with Animation -->
+                <div class="flex justify-center mb-6">
+                    <div class="floating-animation relative">
+                        <div
+                            class="w-24 h-24 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center shadow-xl">
+                            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <!-- Notification Badge -->
+                        <div
+                            class="absolute -top-1 -right-1 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-8 text-center">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Verify Your Email</h1>
+                    <p class="text-gray-600">We've sent a 6-digit verification code to your email address</p>
+                    <p class="text-sm text-purple-600 font-medium mt-2" id="timerDisplay">Code expires in 5:00</p>
+                </div>
+
+                <!-- Error Message -->
+                <div th:if="${error}" class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-red-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-red-700 font-medium" th:text="${error}">Error message</span>
+                    </div>
+                </div>
+
+                <form action="/verify-otp" method="POST" class="space-y-6" id="otpForm">
+                    <!-- OTP Input Fields -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-4 text-center">Enter Verification
+                            Code</label>
+                        <div class="flex justify-center gap-3" id="otpContainer">
+                            <input type="text" maxlength="1" class="otp-input" id="otp1" name="otp1" pattern="[0-9]"
+                                inputmode="numeric" autocomplete="one-time-code" autofocus>
+                            <input type="text" maxlength="1" class="otp-input" id="otp2" name="otp2" pattern="[0-9]"
+                                inputmode="numeric">
+                            <input type="text" maxlength="1" class="otp-input" id="otp3" name="otp3" pattern="[0-9]"
+                                inputmode="numeric">
+                            <input type="text" maxlength="1" class="otp-input" id="otp4" name="otp4" pattern="[0-9]"
+                                inputmode="numeric">
+                            <input type="text" maxlength="1" class="otp-input" id="otp5" name="otp5" pattern="[0-9]"
+                                inputmode="numeric">
+                            <input type="text" maxlength="1" class="otp-input" id="otp6" name="otp6" pattern="[0-9]"
+                                inputmode="numeric">
+                        </div>
+                        <!-- Hidden field for combined OTP -->
+                        <input type="hidden" name="otp" id="otpCombined">
+                    </div>
+
+                    <button type="submit"
+                        class="w-full py-4 btn-gradient text-white rounded-xl font-semibold text-lg shadow-lg"
+                        id="verifyBtn" disabled>
+                        <span class="flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            Verify Code
+                        </span>
+                    </button>
+                </form>
+
+                <!-- Resend Code Section -->
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <div class="text-center">
+                        <p class="text-gray-600 mb-4">Didn't receive the code?</p>
+                        <button id="resendBtn" disabled
+                            class="inline-flex items-center text-purple-600 hover:text-purple-800 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            <span id="resendText">Resend in 60s</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Security Notice -->
+                <div class="mt-6 p-4 bg-blue-50 rounded-xl">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-blue-600 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <div class="text-sm text-blue-800">
+                            <p class="font-semibold mb-1">Security Tips</p>
+                            <ul class="text-blue-700 space-y-1">
+                                <li>• Check your spam folder if you don't see the email</li>
+                                <li>• The code expires in 5 minutes</li>
+                                <li>• Never share your OTP with anyone</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const otpCombined = document.getElementById('otpCombined');
+        const resendBtn = document.getElementById('resendBtn');
+        const resendText = document.getElementById('resendText');
+        const timerDisplay = document.getElementById('timerDisplay');
+
+        let otpExpiry = 300; // 5 minutes in seconds
+        let resendCooldown = 60; // 60 seconds cooldown
+
+        // OTP Input handling
+        otpInputs.forEach((input, index) => {
+            // Handle input
+            input.addEventListener('input', function (e) {
+                const value = e.target.value;
+
+                // Only allow numbers
+                if (!/^\d*$/.test(value)) {
+                    e.target.value = '';
+                    return;
+                }
+
+                if (value.length === 1) {
+                    input.classList.add('filled');
+                    input.classList.remove('error');
+
+                    // Move to next input
+                    if (index < otpInputs.length - 1) {
+                        otpInputs[index + 1].focus();
+                    }
+                } else {
+                    input.classList.remove('filled');
+                }
+
+                updateVerifyButton();
+            });
+
+            // Handle paste
+            input.addEventListener('paste', function (e) {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+
+                pastedData.split('').forEach((char, i) => {
+                    if (otpInputs[i]) {
+                        otpInputs[i].value = char;
+                        otpInputs[i].classList.add('filled');
+                    }
+                });
+
+                if (pastedData.length === 6) {
+                    otpInputs[5].focus();
+                }
+
+                updateVerifyButton();
+            });
+
+            // Handle backspace
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'Backspace') {
+                    if (input.value === '' && index > 0) {
+                        otpInputs[index - 1].focus();
+                        otpInputs[index - 1].value = '';
+                        otpInputs[index - 1].classList.remove('filled');
+                    } else {
+                        input.classList.remove('filled');
+                    }
+                    updateVerifyButton();
+                }
+
+                // Handle arrow keys
+                if (e.key === 'ArrowLeft' && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+                if (e.key === 'ArrowRight' && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            });
+        });
+
+        function updateVerifyButton() {
+            const otp = Array.from(otpInputs).map(input => input.value).join('');
+            otpCombined.value = otp;
+            verifyBtn.disabled = otp.length !== 6;
+        }
+
+        // OTP Expiry Timer
+        const expiryInterval = setInterval(() => {
+            otpExpiry--;
+            const minutes = Math.floor(otpExpiry / 60);
+            const seconds = otpExpiry % 60;
+            timerDisplay.textContent = `Code expires in ${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            if (otpExpiry <= 60) {
+                timerDisplay.classList.add('text-red-600');
+                timerDisplay.classList.remove('text-purple-600');
+            }
+
+            if (otpExpiry <= 0) {
+                clearInterval(expiryInterval);
+                timerDisplay.textContent = 'Code has expired. Please request a new one.';
+                verifyBtn.disabled = true;
+                resendBtn.disabled = false;
+                resendText.textContent = 'Resend Code';
+            }
+        }, 1000);
+
+        // Resend Cooldown Timer
+        const resendInterval = setInterval(() => {
+            resendCooldown--;
+            resendText.textContent = `Resend in ${resendCooldown}s`;
+
+            if (resendCooldown <= 0) {
+                clearInterval(resendInterval);
+                resendBtn.disabled = false;
+                resendText.textContent = 'Resend Code';
+            }
+        }, 1000);
+
+        // Form submission
+        document.getElementById('otpForm').addEventListener('submit', function (e) {
+            const otp = otpCombined.value;
+
+            if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+                e.preventDefault();
+                otpInputs.forEach(input => {
+                    input.classList.add('error');
+                });
+                setTimeout(() => {
+                    otpInputs.forEach(input => input.classList.remove('error'));
+                }, 500);
+                return;
+            }
+
+            verifyBtn.innerHTML = '<span class="flex items-center justify-center"><svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Verifying...</span>';
+            verifyBtn.disabled = true;
+        });
+
+        // Resend button click
+        resendBtn.addEventListener('click', function () {
+            if (!this.disabled) {
+                window.location.href = '/forgot';
+            }
+        });
+    </script>
+    <script src="/js/theme-toggle.js"></script>
+</body>
+
+</html>

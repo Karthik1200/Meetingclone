@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,13 +9,16 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
         :root {
-            --primary-color: #4285f4;
-            --dark-bg: #202124;
-            --secondary-bg: #303134;
+            --primary-color: #0d9488;
+            --primary-light: #14b8a6;
+            --primary-dark: #0f766e;
+            --dark-bg: #1f2937;
+            --secondary-bg: #374151;
+            --accent-color: #06b6d4;
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f8fafc;
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
@@ -29,7 +33,7 @@
             background: white;
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         .video-preview {
@@ -53,7 +57,7 @@
             width: 120px;
             height: 120px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -86,11 +90,11 @@
 
         .control-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         .control-btn.active {
-            background: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
             color: white;
         }
 
@@ -111,7 +115,7 @@
         }
 
         .meeting-info {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
             color: white;
             border-radius: 15px;
             padding: 25px;
@@ -119,7 +123,7 @@
         }
 
         .btn-join {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
             border: none;
             padding: 15px 50px;
             font-size: 1.2rem;
@@ -131,7 +135,8 @@
 
         .btn-join:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(13, 148, 136, 0.4);
+            color: white;
         }
 
         .ready-check {
@@ -168,14 +173,44 @@
             font-weight: 600;
         }
     </style>
+    <link rel="stylesheet" href="/css/theme.css">
 </head>
+
 <body>
-    <div class="lobby-container">
+    <!-- Navigation with Theme Toggle -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm"
+        style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000;">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" href="/index">
+                <i class="bi bi-camera-video-fill me-2" style="font-size: 24px; color: var(--primary-color);"></i>
+                <span style="font-weight: 600; color: #1f2937;">ConferMeet</span>
+            </a>
+            <div class="d-flex align-items-center">
+                <!-- Theme Toggle Button -->
+                <button class="theme-toggle-btn me-3" id="themeToggle" title="Toggle Dark/Light Mode"
+                    aria-label="Toggle theme">
+                    <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                        </path>
+                    </svg>
+                    <svg class="moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                        </path>
+                    </svg>
+                </button>
+                <span class="text-muted me-3" th:text="'Hi, ' + ${username}">Hi, User</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lobby-container" style="margin-top: 70px;">
         <div class="row g-4">
             <div class="col-lg-8">
                 <div class="preview-card">
                     <h2 class="mb-4"><i class="bi bi-camera-video me-2 text-primary"></i>Ready to join?</h2>
-                    
+
                     <div class="video-preview">
                         <div class="video-placeholder">
                             <div class="text-center">
@@ -202,7 +237,7 @@
 
                     <div class="settings-panel" id="settingsPanel" style="display: none;">
                         <h5 class="mb-3"><i class="bi bi-gear me-2"></i>Audio & Video Settings</h5>
-                        
+
                         <div class="device-select">
                             <label class="form-label fw-bold">Microphone</label>
                             <select class="form-select">
@@ -272,9 +307,18 @@
                         </div>
                     </div>
 
+                    <!-- Waiting Participants Section -->
                     <div class="mt-4">
-                        <h5 class="mb-3"><i class="bi bi-people me-2"></i>In Lobby (1)</h5>
-                        <div class="participant-list">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0"><i class="bi bi-people me-2"></i>In Lobby (<span id="lobbyCount">1</span>)
+                            </h5>
+                            <button th:if="${isHost}" class="btn btn-success btn-sm" onclick="admitAll()"
+                                id="admitAllBtn">
+                                <i class="bi bi-check-all me-1"></i>Admit All
+                            </button>
+                        </div>
+                        <div class="participant-list" id="participantList">
+                            <!-- Current User (You) -->
                             <div class="participant-item">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="avatar-preview" style="width: 40px; height: 40px; font-size: 1rem;">
@@ -282,12 +326,53 @@
                                     </div>
                                     <div>
                                         <strong th:text="${username}">You</strong>
+                                        <span th:if="${isHost}" class="badge bg-warning ms-1"
+                                            style="font-size: 0.6rem;">Host</span>
                                         <br>
-                                        <small class="text-muted">Waiting to join</small>
+                                        <small class="text-muted">Ready to join</small>
                                     </div>
                                 </div>
-                                <span class="badge bg-success">Ready</span>
+                                <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Ready</span>
                             </div>
+
+                            <!-- Simulated waiting participants (for demo - would be dynamic in production) -->
+                            <div th:if="${isHost}" class="participant-item" id="waitingParticipant1"
+                                style="display: none;">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="avatar-preview"
+                                        style="width: 40px; height: 40px; font-size: 1rem; background: linear-gradient(135deg, #34a853 0%, #1e8e3e 100%);">
+                                        <i class="bi bi-person-fill"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Guest User</strong>
+                                        <br>
+                                        <small class="text-muted">Requesting to join</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-success btn-sm"
+                                        onclick="admitParticipant('waitingParticipant1')" title="Admit">
+                                        <i class="bi bi-check"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm"
+                                        onclick="denyParticipant('waitingParticipant1')" title="Deny">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Host Controls -->
+                    <div th:if="${isHost}" class="mt-4 p-3 bg-warning bg-opacity-10 rounded border border-warning">
+                        <h6 class="mb-2 text-warning"><i class="bi bi-shield-check me-2"></i>Host Controls</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-warning btn-sm" onclick="toggleWaitingRoom()">
+                                <i class="bi bi-hourglass-split me-2"></i>Toggle Waiting Room
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="lockMeeting()">
+                                <i class="bi bi-lock me-2"></i>Lock Meeting
+                            </button>
                         </div>
                     </div>
 
@@ -297,6 +382,7 @@
                             <li>Test your audio and video before joining</li>
                             <li>Make sure you're in a quiet environment</li>
                             <li>Check your internet connection</li>
+                            <li th:if="${isHost}">As host, you can admit or deny waiting participants</li>
                         </ul>
                     </div>
 
@@ -311,6 +397,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/theme-toggle.js"></script>
     <script>
         let isMicMuted = true;
         let isCameraOff = true;
@@ -318,7 +405,7 @@
         function toggleMic() {
             const btn = document.getElementById('micBtn');
             isMicMuted = !isMicMuted;
-            
+
             if (isMicMuted) {
                 btn.classList.add('muted');
                 btn.innerHTML = '<i class="bi bi-mic-mute-fill"></i>';
@@ -332,7 +419,7 @@
         function toggleCamera() {
             const btn = document.getElementById('camBtn');
             isCameraOff = !isCameraOff;
-            
+
             if (isCameraOff) {
                 btn.classList.add('muted');
                 btn.innerHTML = '<i class="bi bi-camera-video-off-fill"></i>';
@@ -346,7 +433,7 @@
         function toggleSettings() {
             const panel = document.getElementById('settingsPanel');
             const btn = document.getElementById('settingsBtn');
-            
+
             if (panel.style.display === 'none') {
                 panel.style.display = 'block';
                 btn.classList.add('active');
@@ -364,7 +451,7 @@
         function copyMeetingCode() {
             const codeElement = document.querySelector('[th\\:text="${meetingCode}"]');
             const code = codeElement ? codeElement.textContent : '';
-            
+
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(code).then(() => {
                     showNotification('Meeting code copied!');
@@ -372,15 +459,66 @@
             }
         }
 
-        function showNotification(message) {
+        function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
-            notification.className = 'alert alert-success position-fixed top-0 start-50 translate-middle-x mt-3';
+            notification.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3 shadow-lg`;
             notification.style.zIndex = '9999';
-            notification.textContent = message;
+            notification.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle' : type === 'danger' ? 'x-circle' : 'info-circle'} me-2"></i>${message}`;
             document.body.appendChild(notification);
 
             setTimeout(() => notification.remove(), 3000);
         }
+
+        // Host Controls Functions
+        function admitParticipant(participantId) {
+            const participant = document.getElementById(participantId);
+            if (participant) {
+                participant.remove();
+                updateLobbyCount();
+                showNotification('Participant admitted to the meeting', 'success');
+            }
+        }
+
+        function denyParticipant(participantId) {
+            const participant = document.getElementById(participantId);
+            if (participant) {
+                participant.remove();
+                updateLobbyCount();
+                showNotification('Participant denied access', 'warning');
+            }
+        }
+
+        function admitAll() {
+            const waitingParticipants = document.querySelectorAll('[id^="waitingParticipant"]');
+            waitingParticipants.forEach(p => p.remove());
+            updateLobbyCount();
+            showNotification('All participants admitted', 'success');
+        }
+
+        function updateLobbyCount() {
+            const participantItems = document.querySelectorAll('.participant-item');
+            const count = participantItems.length;
+            document.getElementById('lobbyCount').textContent = count;
+        }
+
+        function toggleWaitingRoom() {
+            showNotification('Waiting room toggled', 'info');
+        }
+
+        function lockMeeting() {
+            showNotification('Meeting locked - no new participants can join', 'warning');
+        }
+
+        // Simulate a participant joining after 5 seconds (for demo purposes)
+        setTimeout(() => {
+            const waitingParticipant = document.getElementById('waitingParticipant1');
+            if (waitingParticipant) {
+                waitingParticipant.style.display = 'flex';
+                updateLobbyCount();
+                showNotification('A participant is waiting in the lobby', 'info');
+            }
+        }, 5000);
     </script>
 </body>
+
 </html>

@@ -101,6 +101,10 @@ public class UserService {
         return repo.findById(id);
     }
 
+    public Optional<User> findByProviderAndProviderId(String provider, String providerId) {
+        return repo.findByAuthProviderAndProviderId(provider, providerId);
+    }
+
     public boolean verifyPassword(String rawPassword, String savedPassword) {
         return rawPassword != null && rawPassword.equals(savedPassword);
     }

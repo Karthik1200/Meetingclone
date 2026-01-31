@@ -8,11 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.UUID;
 
 @Controller
 public class UserController {
@@ -29,7 +33,15 @@ public class UserController {
     }
 
     @GetMapping("/loginpage")
-    public String loginPages() {
+    public String loginPages(@RequestParam(required = false) String error,
+            @RequestParam(required = false) String logout,
+            Model model) {
+        if (error != null) {
+            model.addAttribute("error", "Invalid email or password. Please try again.");
+        }
+        if (logout != null) {
+            model.addAttribute("success", "You have been logged out successfully.");
+        }
         return "loginpage";
     }
 
@@ -183,6 +195,112 @@ public class UserController {
         }
     }
 
+    // Google Sign-In API endpoint
+    @PostMapping("/api/auth/google")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> googleSignIn(
+            @RequestBody Map<String, String> payload,
+            HttpSession session) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            String email = payload.get("email");
+            String name = payload.get("name");
+            String googleId = payload.get("googleId");
+            String imageUrl = payload.get("imageUrl");
+
+            if (email == null || googleId == null) {
+                response.put("success", false);
+                response.put("message", "Invalid Google credentials");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // Check if user already exists with this Google ID
+            Optional<User> existingGoogleUser = userService.findByProviderAndProviderId("GOOGLE", googleId);
+
+            User user;
+            if (existingGoogleUser.isPresent()) {
+                // User already exists with Google - log them in
+                user = existingGoogleUser.get();
+            } else {
+                // Check if email already exists (might be a local account)
+                Optional<User> existingEmailUser = userService.getUserByEmail(email);
+
+                if (existingEmailUser.isPresent()) {
+                    // Email exists but with different auth provider
+                    User existingUser = existingEmailUser.get();
+                    if ("LOCAL".equals(existingUser.getAuthProvider())) {
+                        // Link Google to existing local account
+                        existingUser.setAuthProvider("GOOGLE");
+                        existingUser.setProviderId(googleId);
+                        if (imageUrl != null) {
+                            existingUser.setProfileImageUrl(imageUrl);
+                        }
+                        user = userService.createUser(existingUser);
+                    } else {
+                        user = existingUser;
+                    }
+                } else {
+                    // Create new user with Google
+                    user = new User();
+                    user.setEmail(email.toLowerCase().trim());
+                    user.setFullName(name != null ? name : "Google User");
+                    user.setUsername(generateUsernameFromEmail(email));
+                    user.setPassword(UUID.randomUUID().toString()); // Random password for Google users
+                    user.setAuthProvider("GOOGLE");
+                    user.setProviderId(googleId);
+                    user.setProfileImageUrl(imageUrl);
+                    user.setRole("USER");
+                    user.setIsActive(true);
+
+                    user = userService.createUser(user);
+                }
+            }
+
+            // Update last login
+            userService.updateLastLogin(user.getId());
+
+            // Set session attributes
+            session.setAttribute("username", user.getUsername());
+            session.setAttribute("userId", user.getId());
+            session.setAttribute("email", user.getEmail());
+            session.setAttribute("role", user.getRole());
+            session.setAttribute("isLoggedIn", true);
+            session.setAttribute("fullName", user.getFullName());
+
+            response.put("success", true);
+            response.put("message", "Login successful");
+            response.put("redirectUrl", "ADMIN".equals(user.getRole()) ? "/admin" : "/index");
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Google sign-in failed: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    // Helper method to generate username from email
+    private String generateUsernameFromEmail(String email) {
+        String baseName = email.split("@")[0].replaceAll("[^a-zA-Z0-9_]", "");
+        if (baseName.length() < 3) {
+            baseName = baseName + "user";
+        }
+        if (baseName.length() > 15) {
+            baseName = baseName.substring(0, 15);
+        }
+
+        String username = baseName;
+        int counter = 1;
+        while (userService.usernameExists(username)) {
+            username = baseName + counter;
+            counter++;
+        }
+        return username;
+    }
+
     @PostMapping("/loginpage")
     public String login(@RequestParam String email,
             @RequestParam String password,
@@ -237,7 +355,7 @@ public class UserController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "redirect:/loginpage";
+        return "redirect:/loginpage?logout=true";
     }
 
     @PostMapping("/forgot-password")

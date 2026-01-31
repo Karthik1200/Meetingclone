@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-MeetcloneApplication<meetclone>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.meetclone.MeetcloneApplication",
+            "projectName": "meetclone",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

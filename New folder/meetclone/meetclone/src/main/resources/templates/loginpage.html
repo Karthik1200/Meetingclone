@@ -7,7 +7,6 @@
     <title>Login - ConferMeet</title>
     <meta name="description" content="Sign in to ConferMeet - Secure video conferencing for everyone">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,7 +16,6 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* Loading spinner for Google button */
         .google-loading {
             pointer-events: none;
             opacity: 0.7;
@@ -66,7 +64,6 @@
                     </a>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <!-- Theme Toggle Button -->
                     <button class="theme-toggle-btn" id="themeToggle" title="Toggle Dark/Light Mode"
                         aria-label="Toggle theme">
                         <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,7 +193,6 @@
                                 </svg>
                                 Forgot password?
                             </a>
-                            <!-- Enhanced Tooltip -->
                             <div
                                 class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-4 py-3 bg-gray-900 text-white text-xs rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 whitespace-nowrap z-10 shadow-lg">
                                 <div class="text-center">
@@ -242,7 +238,6 @@
                         </button>
                     </div>
 
-                    <!-- Google Sign-In Error Message -->
                     <div id="googleError" class="hidden mt-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
                         <div class="flex items-center">
                             <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -278,11 +273,9 @@
             }
         }
 
-        // ===== GOOGLE SIGN-IN IMPLEMENTATION =====
         const GOOGLE_CLIENT_ID = '882908554370-hfipf2ms3dk70tgce15dgjrsinqtivbd.apps.googleusercontent.com';
         let googleClient;
 
-        // Initialize Google Sign-In when the page loads
         window.onload = function () {
             if (typeof google !== 'undefined' && google.accounts) {
                 initGoogleSignIn();

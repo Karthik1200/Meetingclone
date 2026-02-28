@@ -1,13 +1,19 @@
 package com.meetclone.service;
 
 import com.meetclone.entity.User;
+import com.meetclone.entity.Admin;
+import com.meetclone.entity.PasswordResetToken;
 import com.meetclone.repository.UserRepository;
+import com.meetclone.repository.AdminRepository;
+import com.meetclone.repository.PasswordResetTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
-import java.util.Random;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Service
@@ -16,9 +22,20 @@ public class UserService {
     @Autowired
     private UserRepository repo;
 
+    @Autowired
+    private AdminRepository adminRepo;
+
+    @Autowired
+    private PasswordResetTokenRepository tokenRepo;
+
+    @Autowired
+    private EmailService emailService;
+
     private static final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
+
+    private static final int TOKEN_EXPIRY_MINUTES = 15;
 
     public boolean emailExists(String email) {
         return repo.existsByEmail(email);
@@ -116,27 +133,85 @@ public class UserService {
         });
     }
 
-    public String generateOtp() {
-        Random random = new Random();
-        int otp = 100000 + random.nextInt(900000);
-        return String.valueOf(otp);
+    // ==========================================
+    // Token-Based Password Reset Methods
+    // ==========================================
+
+    /**
+     * Creates a unique UUID token, stores it in the DB with a 15-minute expiry,
+     * and sends a password reset email with a direct link.
+     */
+    @Transactional
+    public String createPasswordResetToken(User user) {
+        // Invalidate any existing unused tokens for this user
+        List<PasswordResetToken> existingTokens = tokenRepo.findByUserAndUsedFalse(user);
+        for (PasswordResetToken existing : existingTokens) {
+            existing.setUsed(true);
+            tokenRepo.save(existing);
+        }
+
+        // Generate a new unique token
+        String tokenValue = UUID.randomUUID().toString();
+        LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(TOKEN_EXPIRY_MINUTES);
+
+        PasswordResetToken resetToken = new PasswordResetToken(tokenValue, user, expiryDate);
+        tokenRepo.save(resetToken);
+
+        // Send the reset email
+        emailService.sendPasswordResetEmail(user.getEmail(), tokenValue);
+
+        return tokenValue;
     }
 
-    public boolean isValidOtp(String otp) {
-        if (otp == null || otp.length() != 6) {
+    /**
+     * Validates a password reset token: checks existence, expiry, and used status.
+     * Returns the PasswordResetToken if valid, or empty Optional if invalid.
+     */
+    public Optional<PasswordResetToken> validatePasswordResetToken(String token) {
+        Optional<PasswordResetToken> tokenOpt = tokenRepo.findByToken(token);
+
+        if (tokenOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        PasswordResetToken resetToken = tokenOpt.get();
+
+        if (!resetToken.isValid()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(resetToken);
+    }
+
+    /**
+     * Resets the user's password using the provided token.
+     * The token is invalidated (marked as used) after successful reset.
+     */
+    @Transactional
+    public boolean resetPasswordWithToken(String token, String newPassword) {
+        Optional<PasswordResetToken> tokenOpt = validatePasswordResetToken(token);
+
+        if (tokenOpt.isEmpty()) {
             return false;
         }
 
-        return otp.matches("\\d{6}");
+        PasswordResetToken resetToken = tokenOpt.get();
+        User user = resetToken.getUser();
+
+        // Update the user's password
+        user.setPassword(newPassword);
+        repo.save(user);
+
+        // Invalidate the token (mark as used)
+        resetToken.setUsed(true);
+        tokenRepo.save(resetToken);
+
+        return true;
     }
 
-    public boolean verifyOtp(String inputOtp, String savedOtp) {
-        if (inputOtp == null || savedOtp == null) {
-            return false;
-        }
-
-        return inputOtp.trim().equals(savedOtp.trim());
-    }
+    // ==========================================
+    // Existing helper methods
+    // ==========================================
 
     public boolean isAdmin(User user) {
         return user != null && "ADMIN".equalsIgnoreCase(user.getRole());
@@ -144,15 +219,6 @@ public class UserService {
 
     public boolean isUser(User user) {
         return user != null && "USER".equalsIgnoreCase(user.getRole());
-    }
-
-    public void sendOtpEmail(String email, String otp) {
-        System.out.println("===========================================");
-        System.out.println("SENDING OTP EMAIL");
-        System.out.println("To: " + email);
-        System.out.println("OTP: " + otp);
-        System.out.println("===========================================");
-
     }
 
     public boolean isValidUsername(String username) {
@@ -174,5 +240,44 @@ public class UserService {
                 .replaceAll("\"", "&quot;")
                 .replaceAll("'", "&#x27;")
                 .replaceAll("/", "&#x2F;");
+    }
+
+    public boolean passwordExistsInUsers(String password) {
+        return repo.existsByPassword(password);
+    }
+
+    public boolean passwordExistsInAdmins(String password) {
+        return adminRepo.existsByPassword(password);
+    }
+
+    public boolean passwordExists(String password) {
+        return passwordExistsInUsers(password) || passwordExistsInAdmins(password);
+    }
+
+    public boolean adminEmailExists(String email) {
+        return adminRepo.existsByEmail(email);
+    }
+
+    public boolean adminUsernameExists(String username) {
+        return adminRepo.existsByUsername(username);
+    }
+
+    public Admin createAdmin(Admin admin) {
+        return adminRepo.save(admin);
+    }
+
+    public Optional<Admin> getAdminByEmail(String email) {
+        return adminRepo.findByEmail(email.trim().toLowerCase());
+    }
+
+    public Optional<Admin> getAdminById(Long id) {
+        return adminRepo.findById(id);
+    }
+
+    public void updateAdminLastLogin(Long id) {
+        adminRepo.findById(id).ifPresent(admin -> {
+            admin.setLastLogin(LocalDateTime.now());
+            adminRepo.save(admin);
+        });
     }
 }

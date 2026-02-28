@@ -113,7 +113,6 @@
 </head>
 
 <body class="min-h-screen gradient-bg">
-    <!-- Navigation -->
     <nav class="bg-white/10 backdrop-blur-md fixed w-full top-0 z-50 border-b border-white/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -127,7 +126,6 @@
                     </a>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <!-- Theme Toggle Button -->
                     <button class="theme-toggle-btn" id="themeToggle" title="Toggle Dark/Light Mode"
                         aria-label="Toggle theme">
                         <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -156,7 +154,6 @@
     <div class="flex items-center justify-center min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-md w-full">
             <div class="glass-card rounded-3xl p-8 sm:p-12">
-                <!-- Icon with Animation -->
                 <div class="flex justify-center mb-6">
                     <div class="floating-animation relative">
                         <div
@@ -166,7 +163,6 @@
                                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <!-- Notification Badge -->
                         <div
                             class="absolute -top-1 -right-1 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
                             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -183,7 +179,6 @@
                     <p class="text-sm text-purple-600 font-medium mt-2" id="timerDisplay">Code expires in 5:00</p>
                 </div>
 
-                <!-- Error Message -->
                 <div th:if="${error}" class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 text-red-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -196,7 +191,6 @@
                 </div>
 
                 <form action="/verify-otp" method="POST" class="space-y-6" id="otpForm">
-                    <!-- OTP Input Fields -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-4 text-center">Enter Verification
                             Code</label>
@@ -214,7 +208,6 @@
                             <input type="text" maxlength="1" class="otp-input" id="otp6" name="otp6" pattern="[0-9]"
                                 inputmode="numeric">
                         </div>
-                        <!-- Hidden field for combined OTP -->
                         <input type="hidden" name="otp" id="otpCombined">
                     </div>
 
@@ -231,7 +224,6 @@
                     </button>
                 </form>
 
-                <!-- Resend Code Section -->
                 <div class="mt-8 pt-6 border-t border-gray-200">
                     <div class="text-center">
                         <p class="text-gray-600 mb-4">Didn't receive the code?</p>
@@ -246,7 +238,6 @@
                     </div>
                 </div>
 
-                <!-- Security Notice -->
                 <div class="mt-6 p-4 bg-blue-50 rounded-xl">
                     <div class="flex items-start">
                         <svg class="w-5 h-5 text-blue-600 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
@@ -276,16 +267,13 @@
         const resendText = document.getElementById('resendText');
         const timerDisplay = document.getElementById('timerDisplay');
 
-        let otpExpiry = 300; // 5 minutes in seconds
-        let resendCooldown = 60; // 60 seconds cooldown
+        let otpExpiry = 300; 
+        let resendCooldown = 60; 
 
-        // OTP Input handling
         otpInputs.forEach((input, index) => {
-            // Handle input
             input.addEventListener('input', function (e) {
                 const value = e.target.value;
 
-                // Only allow numbers
                 if (!/^\d*$/.test(value)) {
                     e.target.value = '';
                     return;
@@ -295,7 +283,6 @@
                     input.classList.add('filled');
                     input.classList.remove('error');
 
-                    // Move to next input
                     if (index < otpInputs.length - 1) {
                         otpInputs[index + 1].focus();
                     }
@@ -306,7 +293,6 @@
                 updateVerifyButton();
             });
 
-            // Handle paste
             input.addEventListener('paste', function (e) {
                 e.preventDefault();
                 const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
@@ -325,7 +311,6 @@
                 updateVerifyButton();
             });
 
-            // Handle backspace
             input.addEventListener('keydown', function (e) {
                 if (e.key === 'Backspace') {
                     if (input.value === '' && index > 0) {
@@ -338,7 +323,6 @@
                     updateVerifyButton();
                 }
 
-                // Handle arrow keys
                 if (e.key === 'ArrowLeft' && index > 0) {
                     otpInputs[index - 1].focus();
                 }
@@ -354,7 +338,6 @@
             verifyBtn.disabled = otp.length !== 6;
         }
 
-        // OTP Expiry Timer
         const expiryInterval = setInterval(() => {
             otpExpiry--;
             const minutes = Math.floor(otpExpiry / 60);
@@ -375,7 +358,6 @@
             }
         }, 1000);
 
-        // Resend Cooldown Timer
         const resendInterval = setInterval(() => {
             resendCooldown--;
             resendText.textContent = `Resend in ${resendCooldown}s`;
@@ -387,7 +369,6 @@
             }
         }, 1000);
 
-        // Form submission
         document.getElementById('otpForm').addEventListener('submit', function (e) {
             const otp = otpCombined.value;
 
@@ -406,7 +387,6 @@
             verifyBtn.disabled = true;
         });
 
-        // Resend button click
         resendBtn.addEventListener('click', function () {
             if (!this.disabled) {
                 window.location.href = '/forgot';

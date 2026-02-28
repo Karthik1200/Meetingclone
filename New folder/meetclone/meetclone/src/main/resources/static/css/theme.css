@@ -1,12 +1,3 @@
-/**
- * ConferMeet Theme System
- * Dark/Light mode CSS variables and styles
- */
-
-/* ============================================
-   THEME TOGGLE BUTTON STYLES
-   ============================================ */
-
 .theme-toggle-btn {
     display: flex;
     align-items: center;
@@ -48,7 +39,6 @@
     display: block;
 }
 
-/* Dark mode toggle button styles */
 [data-theme="dark"] .theme-toggle-btn {
     background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
     border-color: #4b5563;
@@ -58,115 +48,88 @@
     border-color: #6366f1;
 }
 
-/* ============================================
-   LIGHT MODE VARIABLES (DEFAULT)
-   ============================================ */
 
 :root {
-    /* Primary Colors */
     --theme-bg-primary: #ffffff;
     --theme-bg-secondary: #f8f9fa;
     --theme-bg-tertiary: #f1f3f4;
     --theme-bg-card: #ffffff;
     --theme-bg-input: #ffffff;
     --theme-bg-hover: rgba(0, 0, 0, 0.05);
-    
-    /* Text Colors */
+
     --theme-text-primary: #1f2937;
     --theme-text-secondary: #5f6368;
     --theme-text-tertiary: #9ca3af;
     --theme-text-inverse: #ffffff;
-    
-    /* Border Colors */
+
     --theme-border-primary: #dadce0;
     --theme-border-secondary: #e5e7eb;
     --theme-border-focus: #1a73e8;
-    
-    /* Shadow Colors */
+
     --theme-shadow-sm: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
     --theme-shadow-md: 0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
     --theme-shadow-lg: 0 2px 6px 0 rgba(60, 64, 67, 0.3), 0 8px 16px 6px rgba(60, 64, 67, 0.15);
-    
-    /* Accent Colors */
+
     --theme-accent-primary: #1a73e8;
     --theme-accent-secondary: #6366f1;
     --theme-accent-gradient: linear-gradient(135deg, #1a73e8 0%, #6366f1 100%);
-    
-    /* Navbar */
+
     --theme-navbar-bg: rgba(255, 255, 255, 0.95);
     --theme-navbar-border: rgba(0, 0, 0, 0.1);
-    
-    /* Modal */
+
     --theme-modal-bg: #ffffff;
     --theme-modal-overlay: rgba(0, 0, 0, 0.5);
-    
-    /* Status Colors */
+
     --theme-success: #34a853;
     --theme-warning: #fbbc04;
     --theme-error: #ea4335;
     --theme-info: #1a73e8;
 }
 
-/* ============================================
-   DARK MODE VARIABLES
-   ============================================ */
 
 [data-theme="dark"] {
-    /* Primary Colors */
     --theme-bg-primary: #0f172a;
     --theme-bg-secondary: #1e293b;
     --theme-bg-tertiary: #334155;
     --theme-bg-card: #1e293b;
     --theme-bg-input: #1e293b;
     --theme-bg-hover: rgba(255, 255, 255, 0.05);
-    
-    /* Text Colors */
+
     --theme-text-primary: #f1f5f9;
     --theme-text-secondary: #94a3b8;
     --theme-text-tertiary: #64748b;
     --theme-text-inverse: #0f172a;
-    
-    /* Border Colors */
+
     --theme-border-primary: #334155;
     --theme-border-secondary: #475569;
     --theme-border-focus: #6366f1;
-    
-    /* Shadow Colors */
+
     --theme-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5), 0 1px 3px 1px rgba(0, 0, 0, 0.4);
     --theme-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
     --theme-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-    
-    /* Accent Colors */
+
     --theme-accent-primary: #6366f1;
     --theme-accent-secondary: #818cf8;
     --theme-accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-    
-    /* Navbar */
+
     --theme-navbar-bg: rgba(15, 23, 42, 0.95);
     --theme-navbar-border: rgba(255, 255, 255, 0.1);
-    
-    /* Modal */
+
     --theme-modal-bg: #1e293b;
     --theme-modal-overlay: rgba(0, 0, 0, 0.7);
-    
-    /* Status Colors */
+
     --theme-success: #22c55e;
     --theme-warning: #fbbf24;
     --theme-error: #ef4444;
     --theme-info: #6366f1;
 }
 
-/* ============================================
-   GLOBAL DARK MODE OVERRIDES
-   ============================================ */
 
-/* Body */
 .dark-mode {
     background-color: var(--theme-bg-primary) !important;
     color: var(--theme-text-primary);
 }
 
-/* Links */
 .dark-mode a:not(.btn):not([class*="text-"]) {
     color: var(--theme-accent-secondary);
 }
@@ -175,7 +138,6 @@
     color: var(--theme-accent-primary);
 }
 
-/* Cards */
 .dark-mode .card,
 .dark-mode .preview-card,
 .dark-mode .feature-card-meet,
@@ -186,7 +148,6 @@
     color: var(--theme-text-primary);
 }
 
-/* Form Inputs */
 .dark-mode input:not([type="checkbox"]):not([type="radio"]),
 .dark-mode select,
 .dark-mode textarea,
@@ -203,7 +164,6 @@
     color: var(--theme-text-tertiary) !important;
 }
 
-/* Modals */
 .dark-mode .modal-content,
 .dark-mode .modal-meet {
     background-color: var(--theme-modal-bg) !important;
@@ -216,7 +176,6 @@
     border-color: var(--theme-border-primary) !important;
 }
 
-/* Dropdowns */
 .dark-mode .dropdown-menu {
     background-color: var(--theme-bg-card) !important;
     border-color: var(--theme-border-primary) !important;
@@ -230,7 +189,6 @@
     background-color: var(--theme-bg-hover) !important;
 }
 
-/* Tables */
 .dark-mode table,
 .dark-mode .table {
     color: var(--theme-text-primary);
@@ -240,21 +198,16 @@
     background-color: var(--theme-bg-secondary);
 }
 
-/* Alerts */
 .dark-mode .alert {
     border-color: var(--theme-border-primary);
 }
 
-/* Labels */
 .dark-mode label,
 .dark-mode .form-label,
 .dark-mode .form-label-meet {
     color: var(--theme-text-primary) !important;
 }
 
-/* ============================================
-   NAVBAR DARK MODE
-   ============================================ */
 
 .dark-mode .navbar,
 .dark-mode nav {
@@ -273,10 +226,6 @@
     color: var(--theme-accent-secondary) !important;
     background-color: var(--theme-bg-hover) !important;
 }
-
-/* ============================================
-   BOOTSTRAP OVERRIDES FOR DARK MODE
-   ============================================ */
 
 .dark-mode .bg-white {
     background-color: var(--theme-bg-card) !important;
@@ -309,11 +258,7 @@
     border-color: var(--theme-border-primary) !important;
 }
 
-/* ============================================
-   TAILWIND OVERRIDES FOR DARK MODE
-   ============================================ */
 
-/* Background overrides */
 .dark-mode .bg-white,
 .dark-mode [class*="bg-white"] {
     background-color: var(--theme-bg-card) !important;
@@ -331,7 +276,6 @@
     background: var(--theme-bg-primary) !important;
 }
 
-/* Text overrides */
 .dark-mode .text-gray-400,
 .dark-mode .text-gray-500 {
     color: var(--theme-text-tertiary) !important;
@@ -347,7 +291,6 @@
     color: var(--theme-text-primary) !important;
 }
 
-/* Specific sections */
 .dark-mode .hero-section {
     background-color: var(--theme-bg-primary) !important;
 }
@@ -373,10 +316,6 @@
     border-color: var(--theme-border-primary) !important;
 }
 
-/* ============================================
-   LOBBY PAGE DARK MODE
-   ============================================ */
-
 .dark-mode .lobby-container {
     background-color: var(--theme-bg-primary);
 }
@@ -398,19 +337,12 @@
     border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
-/* ============================================
-   FORM CARD DARK MODE (Login/Signup pages)
-   ============================================ */
-
 .dark-mode .rounded-3xl.shadow-2xl,
 .dark-mode .glass-card {
     background-color: var(--theme-bg-card) !important;
     box-shadow: var(--theme-shadow-lg);
 }
 
-/* ============================================
-   BUTTON DARK MODE ADJUSTMENTS
-   ============================================ */
 
 .dark-mode .btn-outline-secondary,
 .dark-mode .btn-outline-dark {
@@ -428,9 +360,6 @@
     color: var(--theme-text-primary) !important;
 }
 
-/* ============================================
-   SCROLLBAR DARK MODE
-   ============================================ */
 
 .dark-mode::-webkit-scrollbar {
     width: 8px;
@@ -449,34 +378,24 @@
     background: var(--theme-text-tertiary);
 }
 
-/* ============================================
-   TRANSITION ANIMATIONS
-   ============================================ */
-
-body, 
-.navbar, 
+body,
+.navbar,
 nav,
-.card, 
+.card,
 .modal-content,
-input, 
-select, 
+input,
+select,
 textarea,
 .dropdown-menu {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
-/* ============================================
-   INFO BOX DARK MODE
-   ============================================ */
 
 .dark-mode .info-box-meet {
     background-color: rgba(99, 102, 241, 0.15) !important;
     color: var(--theme-text-secondary);
 }
 
-/* ============================================
-   QUICK TIPS BOX DARK MODE
-   ============================================ */
 
 .dark-mode .bg-light.rounded,
 .dark-mode [class*="bg-opacity-10"] {

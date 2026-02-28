@@ -21,16 +21,12 @@ public class SignalingHandler extends TextWebSocketHandler {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // Map of meetingCode -> Set of sessions in that meeting
     private final Map<String, Set<WebSocketSession>> meetingRooms = new ConcurrentHashMap<>();
 
-    // Map of session ID -> participant info
     private final Map<String, ParticipantInfo> participants = new ConcurrentHashMap<>();
 
-    // Map of meetingCode -> host session ID
     private final Map<String, String> meetingHosts = new ConcurrentHashMap<>();
 
-    // Map of meetingCode -> meeting settings
     private final Map<String, MeetingSettings> meetingSettings = new ConcurrentHashMap<>();
 
     @Override
@@ -104,16 +100,13 @@ public class SignalingHandler extends TextWebSocketHandler {
         String odisVideoEnabled = json.has("videoEnabled") && json.get("videoEnabled").asBoolean() ? "true" : "false";
         boolean videoEnabled = Boolean.parseBoolean(odisVideoEnabled);
 
-        // Create participant info
         ParticipantInfo info = new ParticipantInfo(session.getId(), username, meetingCode, isHost, audioEnabled,
                 videoEnabled);
         participants.put(session.getId(), info);
 
-        // Initialize meeting room if not exists
         meetingRooms.computeIfAbsent(meetingCode, k -> new CopyOnWriteArraySet<>());
         meetingSettings.computeIfAbsent(meetingCode, k -> new MeetingSettings());
 
-        // Set host if first or if explicitly a host
         if (isHost || !meetingHosts.containsKey(meetingCode)) {
             meetingHosts.put(meetingCode, session.getId());
             info.setHost(true);
@@ -121,7 +114,6 @@ public class SignalingHandler extends TextWebSocketHandler {
 
         MeetingSettings settings = meetingSettings.get(meetingCode);
 
-        // Check if meeting is locked
         if (settings.isLocked() && !isHost) {
             ObjectNode response = objectMapper.createObjectNode();
             response.put("type", "meeting-locked");
@@ -130,18 +122,14 @@ public class SignalingHandler extends TextWebSocketHandler {
             return;
         }
 
-        // Check if waiting room is enabled
         if (settings.isWaitingRoomEnabled() && !isHost) {
-            // Add to waiting room instead
             settings.addToWaitingRoom(session.getId());
 
-            // Notify participant they're in waiting room
             ObjectNode waitingResponse = objectMapper.createObjectNode();
             waitingResponse.put("type", "waiting-room");
             waitingResponse.put("message", "Please wait for the host to admit you.");
             session.sendMessage(new TextMessage(waitingResponse.toString()));
 
-            // Notify host about new waiting participant
             String hostSessionId = meetingHosts.get(meetingCode);
             if (hostSessionId != null) {
                 Set<WebSocketSession> roomSessions = meetingRooms.get(meetingCode);
@@ -161,10 +149,8 @@ public class SignalingHandler extends TextWebSocketHandler {
             return;
         }
 
-        // Add to meeting room
         meetingRooms.get(meetingCode).add(session);
 
-        // Send existing participants to new user
         ObjectNode participantsList = objectMapper.createObjectNode();
         participantsList.put("type", "participants-list");
         participantsList.putArray("participants");
@@ -186,14 +172,12 @@ public class SignalingHandler extends TextWebSocketHandler {
         }
         session.sendMessage(new TextMessage(participantsList.toString()));
 
-        // Send join success with own info
         ObjectNode joinSuccess = objectMapper.createObjectNode();
         joinSuccess.put("type", "join-success");
         joinSuccess.put("participantId", session.getId());
         joinSuccess.put("isHost", info.isHost());
         session.sendMessage(new TextMessage(joinSuccess.toString()));
 
-        // Notify others about new participant
         ObjectNode joinNotification = objectMapper.createObjectNode();
         joinNotification.put("type", "participant-joined");
         joinNotification.put("id", session.getId());
@@ -328,7 +312,6 @@ public class SignalingHandler extends TextWebSocketHandler {
 
         sendToParticipant(senderInfo.getMeetingCode(), targetId, notification.toString());
 
-        // Update participant state
         ParticipantInfo targetInfo = participants.get(targetId);
         if (targetInfo != null) {
             if ("audio".equals(mediaType)) {
@@ -346,14 +329,12 @@ public class SignalingHandler extends TextWebSocketHandler {
 
         String targetId = json.get("targetId").asText();
 
-        // Notify the participant they're being removed
         ObjectNode notification = objectMapper.createObjectNode();
         notification.put("type", "removed-from-meeting");
         notification.put("reason", "Removed by host");
 
         sendToParticipant(senderInfo.getMeetingCode(), targetId, notification.toString());
 
-        // Remove participant from room
         Set<WebSocketSession> room = meetingRooms.get(senderInfo.getMeetingCode());
         if (room != null) {
             for (WebSocketSession s : room) {
@@ -364,7 +345,6 @@ public class SignalingHandler extends TextWebSocketHandler {
             }
         }
 
-        // Notify others
         ObjectNode leftNotification = objectMapper.createObjectNode();
         leftNotification.put("type", "participant-left");
         leftNotification.put("participantId", targetId);
@@ -388,8 +368,6 @@ public class SignalingHandler extends TextWebSocketHandler {
             settings.removeFromWaitingRoom(targetId);
         }
 
-        // Find the waiting session and admit them
-        // Note: They need to resend join request
         ObjectNode notification = objectMapper.createObjectNode();
         notification.put("type", "admitted");
 
@@ -451,13 +429,11 @@ public class SignalingHandler extends TextWebSocketHandler {
 
         String meetingCode = info.getMeetingCode();
 
-        // Remove from room
         Set<WebSocketSession> room = meetingRooms.get(meetingCode);
         if (room != null) {
             room.remove(session);
         }
 
-        // Notify others
         ObjectNode notification = objectMapper.createObjectNode();
         notification.put("type", "participant-left");
         notification.put("participantId", session.getId());
@@ -467,7 +443,6 @@ public class SignalingHandler extends TextWebSocketHandler {
 
         participants.remove(session.getId());
 
-        // Handle host leaving - assign new host
         if (info.isHost() && room != null && !room.isEmpty()) {
             WebSocketSession newHostSession = room.iterator().next();
             ParticipantInfo newHostInfo = participants.get(newHostSession.getId());
@@ -525,12 +500,9 @@ public class SignalingHandler extends TextWebSocketHandler {
     }
 
     private void sendToWaitingParticipant(String targetId, String message) {
-        // This would need to track waiting room sessions separately
-        // For now, we use the participants map
-        // In production, maintain a separate waiting sessions map
+
     }
 
-    // Inner classes for data structures
     private static class ParticipantInfo {
         private String sessionId;
         private String username;

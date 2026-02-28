@@ -7,7 +7,6 @@
     <title>Sign Up - ConferMeet</title>
     <meta name="description" content="Create your ConferMeet account - Secure video conferencing for everyone">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,7 +16,6 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* Loading spinner for Google button */
         .google-loading {
             pointer-events: none;
             opacity: 0.7;
@@ -66,7 +64,6 @@
                     </a>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <!-- Theme Toggle Button -->
                     <button class="theme-toggle-btn" id="themeToggle" title="Toggle Dark/Light Mode"
                         aria-label="Toggle theme">
                         <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,6 +139,34 @@
                                 class="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition outline-none"
                                 placeholder="Enter your full name">
                         </div>
+                    </div>
+
+                    <div>
+                        <label for="role" class="block text-sm font-semibold text-gray-700 mb-2">Account Type</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <select id="role" name="role" required
+                                class="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition outline-none appearance-none bg-white cursor-pointer">
+                                <option value="USER" selected>User</option>
+                                <option value="ADMIN">Admin</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">Select Admin for administrator privileges, User for
+                            regular access</p>
                     </div>
 
                     <div>
@@ -247,7 +272,6 @@
                         </button>
                     </div>
 
-                    <!-- Google Sign-In Error Message -->
                     <div id="googleError" class="hidden mt-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
                         <div class="flex items-center">
                             <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -370,17 +394,13 @@
             }
         }
 
-        // ===== GOOGLE SIGN-IN IMPLEMENTATION =====
         const GOOGLE_CLIENT_ID = '882908554370-hfipf2ms3dk70tgce15dgjrsinqtivbd.apps.googleusercontent.com';
         let googleClient;
 
-        // Initialize Google Sign-In when the page loads
         window.onload = function () {
-            // Wait for Google library to load
             if (typeof google !== 'undefined' && google.accounts) {
                 initGoogleSignIn();
             } else {
-                // Retry after a short delay if library not yet loaded
                 setTimeout(function () {
                     if (typeof google !== 'undefined' && google.accounts) {
                         initGoogleSignIn();
@@ -401,24 +421,19 @@
             const btn = document.getElementById('googleSignInBtn');
             const errorDiv = document.getElementById('googleError');
 
-            // Hide any previous errors
             errorDiv.classList.add('hidden');
 
-            // Check if Google library is loaded
             if (typeof google === 'undefined' || !google.accounts) {
                 showGoogleError('Google Sign-In is still loading. Please try again in a moment.');
                 return;
             }
 
-            // Initialize if not already done
             if (!googleClient) {
                 initGoogleSignIn();
             }
 
-            // Add loading state
             btn.classList.add('google-loading');
 
-            // Request access token
             googleClient.requestAccessToken();
         }
 
@@ -431,7 +446,6 @@
                 return;
             }
 
-            // Use the access token to get user info
             fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
                 headers: {
                     'Authorization': `Bearer ${response.access_token}`
@@ -439,7 +453,6 @@
             })
                 .then(res => res.json())
                 .then(userInfo => {
-                    // Send user info to our backend
                     return fetch('/api/auth/google', {
                         method: 'POST',
                         headers: {
@@ -458,7 +471,6 @@
                     btn.classList.remove('google-loading');
 
                     if (data.success) {
-                        // Redirect to the appropriate page
                         window.location.href = data.redirectUrl || '/index';
                     } else {
                         showGoogleError(data.message || 'Sign-in failed. Please try again.');

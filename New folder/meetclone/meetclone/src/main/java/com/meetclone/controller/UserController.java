@@ -1,7 +1,9 @@
 package com.meetclone.controller;
 
 import com.meetclone.entity.User;
+import com.meetclone.entity.Admin;
 import com.meetclone.entity.Meeting;
+import com.meetclone.entity.PasswordResetToken;
 import com.meetclone.service.UserService;
 import com.meetclone.service.MeetingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.Map;
 import java.util.HashMap;
@@ -94,13 +95,27 @@ public class UserController {
         return "forgot_password";
     }
 
-    @GetMapping("/verify-otp")
-    public String verifyOtpPage(HttpSession session, Model model) {
-        String resetEmail = (String) session.getAttribute("resetEmail");
-        if (resetEmail == null) {
-            return "redirect:/forgot";
+    /**
+     * GET /reset-password?token=UUID
+     * User clicks the link from their email — this validates the token
+     * and shows the reset password form if the token is valid.
+     */
+    @GetMapping("/reset-password")
+    public String resetPasswordPage(@RequestParam(required = false) String token, Model model) {
+        if (token == null || token.trim().isEmpty()) {
+            model.addAttribute("error", "Invalid reset link. Please request a new one.");
+            return "forgot_password";
         }
-        return "verify_otp";
+
+        Optional<PasswordResetToken> tokenOpt = userService.validatePasswordResetToken(token);
+
+        if (tokenOpt.isEmpty()) {
+            model.addAttribute("error", "This reset link is invalid or has expired. Please request a new one.");
+            return "forgot_password";
+        }
+
+        model.addAttribute("token", token);
+        return "reset_password";
     }
 
     @GetMapping("/lobby")
@@ -154,46 +169,95 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public String register(User user, Model model) {
+    public String register(@RequestParam String username,
+            @RequestParam String fullName,
+            @RequestParam String email,
+            @RequestParam String password,
+            @RequestParam(defaultValue = "USER") String role,
+            Model model) {
         try {
-            user.setEmail(userService.sanitizeInput(user.getEmail()));
-            user.setUsername(userService.sanitizeInput(user.getUsername()));
-            user.setFullName(userService.sanitizeInput(user.getFullName()));
+            email = userService.sanitizeInput(email);
+            username = userService.sanitizeInput(username);
+            fullName = userService.sanitizeInput(fullName);
 
-            if (!userService.isValidEmail(user.getEmail())) {
+            if (!userService.isValidEmail(email)) {
                 model.addAttribute("error", "Invalid email format. Please enter a valid email address.");
                 return "signup";
             }
 
-            if (userService.emailExists(user.getEmail())) {
-                model.addAttribute("error", "Email already registered. Please sign in or use a different email.");
-                return "signup";
-            }
-
-            if (!userService.isValidUsername(user.getUsername())) {
+            if (!userService.isValidUsername(username)) {
                 model.addAttribute("error",
                         "Invalid username. Must be 3-20 characters, start with a letter, and contain only letters, numbers, and underscores.");
                 return "signup";
             }
 
-            if (userService.usernameExists(user.getUsername())) {
-                model.addAttribute("error", "Username already taken. Please choose a different username.");
-                return "signup";
-            }
-
-            if (!userService.isValidPassword(user.getPassword())) {
+            if (!userService.isValidPassword(password)) {
                 model.addAttribute("error",
                         "Password must be at least 8 characters and contain uppercase, lowercase, and numbers.");
                 return "signup";
             }
 
-            user.setRole("USER");
-            user.setIsActive(true);
+            if (userService.passwordExists(password)) {
+                model.addAttribute("error", "Password already exists for another user. Please give a new Password.");
+                return "signup";
+            }
 
-            userService.createUser(user);
+            System.out.println("===========================================");
+            System.out.println("SIGNUP - Role received: [" + role + "]");
+            System.out.println("Role equals ADMIN: " + "ADMIN".equalsIgnoreCase(role));
+            System.out.println("===========================================");
 
-            model.addAttribute("success", "Account created successfully! Please log in.");
-            return "loginpage";
+            if ("ADMIN".equalsIgnoreCase(role)) {
+
+                if (userService.adminEmailExists(email)) {
+                    model.addAttribute("error",
+                            "Email already registered as admin. Please sign in or use a different email.");
+                    return "signup";
+                }
+
+                if (userService.adminUsernameExists(username)) {
+                    model.addAttribute("error", "Username already taken. Please choose a different username.");
+                    return "signup";
+                }
+
+                Admin admin = new Admin();
+                admin.setEmail(email.trim().toLowerCase());
+                admin.setUsername(username);
+                admin.setFullName(fullName);
+                admin.setPassword(password);
+                admin.setRole("ADMIN");
+                admin.setIsActive(true);
+
+                userService.createAdmin(admin);
+
+                model.addAttribute("success", "Admin account created successfully! Please log in.");
+                return "loginpage";
+
+            } else {
+
+                if (userService.emailExists(email)) {
+                    model.addAttribute("error", "Email already registered. Please sign in or use a different email.");
+                    return "signup";
+                }
+
+                if (userService.usernameExists(username)) {
+                    model.addAttribute("error", "Username already taken. Please choose a different username.");
+                    return "signup";
+                }
+
+                User user = new User();
+                user.setEmail(email.trim().toLowerCase());
+                user.setUsername(username);
+                user.setFullName(fullName);
+                user.setPassword(password);
+                user.setRole("USER");
+                user.setIsActive(true);
+
+                userService.createUser(user);
+
+                model.addAttribute("success", "Account created successfully! Please log in.");
+                return "loginpage";
+            }
 
         } catch (Exception e) {
             model.addAttribute("error", "Registration failed. Please try again.");
@@ -201,7 +265,6 @@ public class UserController {
         }
     }
 
-    // Google Sign-In API endpoint
     @PostMapping("/api/auth/google")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> googleSignIn(
@@ -222,22 +285,17 @@ public class UserController {
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // Check if user already exists with this Google ID
             Optional<User> existingGoogleUser = userService.findByProviderAndProviderId("GOOGLE", googleId);
 
             User user;
             if (existingGoogleUser.isPresent()) {
-                // User already exists with Google - log them in
                 user = existingGoogleUser.get();
             } else {
-                // Check if email already exists (might be a local account)
                 Optional<User> existingEmailUser = userService.getUserByEmail(email);
 
                 if (existingEmailUser.isPresent()) {
-                    // Email exists but with different auth provider
                     User existingUser = existingEmailUser.get();
                     if ("LOCAL".equals(existingUser.getAuthProvider())) {
-                        // Link Google to existing local account
                         existingUser.setAuthProvider("GOOGLE");
                         existingUser.setProviderId(googleId);
                         if (imageUrl != null) {
@@ -248,12 +306,11 @@ public class UserController {
                         user = existingUser;
                     }
                 } else {
-                    // Create new user with Google
                     user = new User();
                     user.setEmail(email.toLowerCase().trim());
                     user.setFullName(name != null ? name : "Google User");
                     user.setUsername(generateUsernameFromEmail(email));
-                    user.setPassword(UUID.randomUUID().toString()); // Random password for Google users
+                    user.setPassword(UUID.randomUUID().toString());
                     user.setAuthProvider("GOOGLE");
                     user.setProviderId(googleId);
                     user.setProfileImageUrl(imageUrl);
@@ -264,10 +321,8 @@ public class UserController {
                 }
             }
 
-            // Update last login
             userService.updateLastLogin(user.getId());
 
-            // Set session attributes
             session.setAttribute("username", user.getUsername());
             session.setAttribute("userId", user.getId());
             session.setAttribute("email", user.getEmail());
@@ -295,7 +350,6 @@ public class UserController {
         }
     }
 
-    // Helper method to generate username from email
     private String generateUsernameFromEmail(String email) {
         String baseName = email.split("@")[0].replaceAll("[^a-zA-Z0-9_]", "");
         if (baseName.length() < 3) {
@@ -353,17 +407,49 @@ public class UserController {
                         return "redirect:" + redirectUrl;
                     }
 
-                    if ("ADMIN".equals(user.getRole())) {
-                        return "redirect:/admin";
-                    } else {
-                        return "redirect:/index";
-                    }
+                    return "redirect:/index";
                 } else {
                     model.addAttribute("error", "Invalid password. Please try again.");
+                    return "loginpage";
                 }
-            } else {
-                model.addAttribute("error", "Email not found. Please sign up first.");
             }
+
+            Optional<Admin> adminOpt = userService.getAdminByEmail(email);
+
+            if (adminOpt.isPresent()) {
+                Admin admin = adminOpt.get();
+
+                if (!admin.getIsActive()) {
+                    model.addAttribute("error", "Account is deactivated. Please contact support.");
+                    return "loginpage";
+                }
+
+                if (userService.verifyPassword(password, admin.getPassword())) {
+                    userService.updateAdminLastLogin(admin.getId());
+
+                    session.setAttribute("username", admin.getUsername());
+                    session.setAttribute("userId", admin.getId());
+                    session.setAttribute("email", admin.getEmail());
+                    session.setAttribute("role", admin.getRole());
+                    session.setAttribute("isLoggedIn", true);
+                    session.setAttribute("fullName", admin.getFullName());
+                    session.setAttribute("isAdmin", true);
+
+                    String redirectUrl = (String) session.getAttribute("onLoginRedirect");
+                    if (redirectUrl != null) {
+                        session.removeAttribute("onLoginRedirect");
+                        return "redirect:" + redirectUrl;
+                    }
+
+                    return "redirect:/admin";
+                } else {
+                    model.addAttribute("error", "Invalid password. Please try again.");
+                    return "loginpage";
+                }
+            }
+
+            model.addAttribute("error", "Email not found. Please sign up first.");
+
         } catch (Exception e) {
             model.addAttribute("error", "Login failed. Please try again.");
         }
@@ -377,9 +463,18 @@ public class UserController {
         return "redirect:/loginpage?logout=true";
     }
 
+    // ==========================================
+    // Token-Based Forgot/Reset Password Flow
+    // ==========================================
+
+    /**
+     * POST /forgot-password
+     * User submits their email on the forgot password form.
+     * Backend validates email, generates a UUID token, stores it in DB,
+     * and sends a reset link via email.
+     */
     @PostMapping("/forgot-password")
     public String forgotPassword(@RequestParam String email,
-            HttpSession session,
             Model model) {
         try {
             email = userService.sanitizeInput(email);
@@ -391,106 +486,61 @@ public class UserController {
 
             Optional<User> userOpt = userService.getUserByEmail(email);
             if (userOpt.isPresent()) {
-                String otp = userService.generateOtp();
+                User user = userOpt.get();
 
-                session.setAttribute("resetEmail", email);
-                session.setAttribute("resetOtp", otp);
-                session.setAttribute("otpTimestamp", LocalDateTime.now());
+                // Generate token, store in DB, and send email
+                userService.createPasswordResetToken(user);
 
-                userService.sendOtpEmail(email, otp);
-
-                model.addAttribute("success", "OTP sent to your email. Check your inbox.");
-                return "redirect:/verify-otp";
+                model.addAttribute("success",
+                        "A password reset link has been sent to your email address. Please check your inbox (and spam folder).");
+                return "forgot_password";
             } else {
-                model.addAttribute("error", "Email not registered.");
+                // For security, show the same success message even if email doesn't exist
+                // This prevents email enumeration attacks
+                model.addAttribute("success",
+                        "If an account exists with that email, a password reset link has been sent. Please check your inbox.");
                 return "forgot_password";
             }
         } catch (Exception e) {
-            model.addAttribute("error", "Failed to send OTP. Please try again.");
+            model.addAttribute("error", "Failed to process your request. Please try again.");
             return "forgot_password";
         }
     }
 
-    @PostMapping("/verify-otp")
-    public String verifyOtp(@RequestParam String otp,
-            HttpSession session,
-            Model model) {
-        try {
-            String savedOtp = (String) session.getAttribute("resetOtp");
-            String resetEmail = (String) session.getAttribute("resetEmail");
-            LocalDateTime otpTimestamp = (LocalDateTime) session.getAttribute("otpTimestamp");
-
-            if (savedOtp == null || resetEmail == null || otpTimestamp == null) {
-                model.addAttribute("error", "Session expired. Please request a new OTP.");
-                return "redirect:/forgot";
-            }
-
-            long minutesElapsed = ChronoUnit.MINUTES.between(otpTimestamp, LocalDateTime.now());
-            if (minutesElapsed > 5) {
-                session.removeAttribute("resetOtp");
-                session.removeAttribute("otpTimestamp");
-                model.addAttribute("error", "OTP expired. Please request a new one.");
-                return "redirect:/forgot";
-            }
-
-            if (!userService.isValidOtp(otp)) {
-                model.addAttribute("error", "Invalid OTP format. Must be 6 digits.");
-                return "verify_otp";
-            }
-
-            if (userService.verifyOtp(otp, savedOtp)) {
-                session.removeAttribute("resetOtp");
-                session.removeAttribute("otpTimestamp");
-
-                model.addAttribute("email", resetEmail);
-                model.addAttribute("success", "OTP verified! You can now reset your password.");
-                return "reset_password";
-            } else {
-                model.addAttribute("error", "Invalid OTP. Please try again.");
-                return "verify_otp";
-            }
-        } catch (Exception e) {
-            model.addAttribute("error", "Verification failed. Please try again.");
-            return "verify_otp";
-        }
-    }
-
+    /**
+     * POST /reset-password
+     * User submits their new password along with the token.
+     * Backend validates the token, updates the password, and invalidates the token.
+     */
     @PostMapping("/reset-password")
-    public String resetPassword(@RequestParam String email,
+    public String resetPassword(@RequestParam String token,
             @RequestParam String newPassword,
-            HttpSession session,
             Model model) {
         try {
-            String resetEmail = (String) session.getAttribute("resetEmail");
-            if (resetEmail == null || !resetEmail.equals(email)) {
-                model.addAttribute("error", "Invalid session. Please start over.");
-                return "redirect:/forgot";
+            if (token == null || token.trim().isEmpty()) {
+                model.addAttribute("error", "Invalid reset token. Please request a new reset link.");
+                return "forgot_password";
             }
 
             if (!userService.isValidPassword(newPassword)) {
                 model.addAttribute("error",
                         "Password must be at least 8 characters and contain uppercase, lowercase, and numbers.");
-                model.addAttribute("email", email);
+                model.addAttribute("token", token);
                 return "reset_password";
             }
 
-            Optional<User> userOpt = userService.getUserByEmail(email);
-            if (userOpt.isPresent()) {
-                User user = userOpt.get();
-                user.setPassword(newPassword);
-                userService.createUser(user);
+            boolean success = userService.resetPasswordWithToken(token, newPassword);
 
-                session.removeAttribute("resetEmail");
-
-                model.addAttribute("success", "Password reset successfully! Please log in.");
-                return "redirect:/loginpage";
+            if (success) {
+                model.addAttribute("success", "Password reset successfully! Please log in with your new password.");
+                return "loginpage";
             } else {
-                model.addAttribute("error", "User not found.");
-                return "redirect:/loginpage";
+                model.addAttribute("error", "This reset link is invalid or has expired. Please request a new one.");
+                return "forgot_password";
             }
         } catch (Exception e) {
             model.addAttribute("error", "Password reset failed. Please try again.");
-            model.addAttribute("email", email);
+            model.addAttribute("token", token);
             return "reset_password";
         }
     }

@@ -35,7 +35,6 @@
             color: white;
         }
 
-        /* Navbar */
         .navbar {
             background: rgba(32, 33, 36, 0.95) !important;
             backdrop-filter: blur(20px);
@@ -57,7 +56,6 @@
             display: flex;
         }
 
-        /* Main Container */
         .lobby-container {
             max-width: 1100px;
             margin: 0 auto;
@@ -74,7 +72,6 @@
             width: 100%;
         }
 
-        /* Preview Card */
         .preview-card {
             background: rgba(60, 64, 67, 0.6);
             backdrop-filter: blur(20px);
@@ -96,7 +93,6 @@
             color: var(--meet-blue);
         }
 
-        /* Video Preview */
         .video-preview-container {
             position: relative;
             background: var(--meet-bg);
@@ -145,7 +141,6 @@
             color: #9aa0a6;
         }
 
-        /* Control Buttons */
         .control-group {
             display: flex;
             justify-content: center;
@@ -191,7 +186,6 @@
             white-space: nowrap;
         }
 
-        /* Settings Panel */
         .settings-panel {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
@@ -247,7 +241,6 @@
             background: var(--meet-surface);
         }
 
-        /* Ready Status */
         .ready-status {
             display: flex;
             align-items: center;
@@ -281,7 +274,6 @@
             margin: 0;
         }
 
-        /* Join Button */
         .join-btn {
             width: 100%;
             padding: 16px 32px;
@@ -308,7 +300,6 @@
             transform: translateY(0);
         }
 
-        /* Info Card */
         .info-card {
             background: rgba(60, 64, 67, 0.6);
             backdrop-filter: blur(20px);
@@ -381,7 +372,6 @@
             margin-top: 12px;
         }
 
-        /* Participants Section */
         .participants-section {
             margin-bottom: 24px;
         }
@@ -476,7 +466,6 @@
             gap: 4px;
         }
 
-        /* Host Controls */
         .host-controls {
             background: linear-gradient(135deg, rgba(251, 188, 4, 0.1), rgba(234, 67, 53, 0.1));
             border: 1px solid rgba(251, 188, 4, 0.3);
@@ -515,7 +504,6 @@
             background: rgba(251, 188, 4, 0.1);
         }
 
-        /* Tips */
         .tips-section {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
@@ -552,7 +540,6 @@
             color: var(--meet-blue);
         }
 
-        /* Leave Button */
         .leave-btn {
             width: 100%;
             padding: 12px;
@@ -573,7 +560,6 @@
             background: rgba(234, 67, 53, 0.1);
         }
 
-        /* Responsive */
         @media (max-width: 900px) {
             .lobby-content {
                 grid-template-columns: 1fr;
@@ -584,7 +570,6 @@
             }
         }
 
-        /* Notifications */
         .notification-container {
             position: fixed;
             top: 80px;
@@ -635,7 +620,6 @@
 </head>
 
 <body>
-    <!-- Navbar -->
     <nav class="navbar navbar-dark sticky-top">
         <div class="container-fluid px-4">
             <a class="navbar-brand text-white" href="/index">
@@ -653,17 +637,14 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <div class="lobby-container">
         <div class="lobby-content">
-            <!-- Preview Card -->
             <div class="preview-card">
                 <h2 class="preview-title">
                     <i class="bi bi-camera-video"></i>
                     Ready to join?
                 </h2>
 
-                <!-- Video Preview -->
                 <div class="video-preview-container">
                     <video id="videoPreview" class="video-preview" autoplay muted playsinline></video>
                     <div class="video-placeholder" id="videoPlaceholder">
@@ -673,7 +654,6 @@
                     </div>
                 </div>
 
-                <!-- Controls -->
                 <div class="control-group">
                     <button class="control-btn off" id="micBtn" onclick="toggleMic()" title="Microphone">
                         <i class="bi bi-mic-mute-fill"></i>
@@ -689,7 +669,6 @@
                     </button>
                 </div>
 
-                <!-- Settings Panel -->
                 <div class="settings-panel" id="settingsPanel">
                     <div class="device-select">
                         <label>Microphone</label>
@@ -714,7 +693,6 @@
                     </button>
                 </div>
 
-                <!-- Ready Status -->
                 <div class="ready-status">
                     <div class="ready-icon">
                         <i class="bi bi-check-lg"></i>
@@ -725,7 +703,6 @@
                     </div>
                 </div>
 
-                <!-- Join Button -->
                 <form action="/meeting" method="GET">
                     <input type="hidden" id="audioEnabled" name="audioEnabled">
                     <input type="hidden" id="videoEnabled" name="videoEnabled">
@@ -736,9 +713,7 @@
                 </form>
             </div>
 
-            <!-- Info Card -->
             <div class="info-card">
-                <!-- Meeting Info -->
                 <div class="meeting-info-header">
                     <h3>Meeting Details</h3>
                     <div class="meeting-title-display" th:text="${meetingTitle}">Team Meeting</div>
@@ -756,7 +731,6 @@
                     </div>
                 </div>
 
-                <!-- Participants in Lobby -->
                 <div class="participants-section">
                     <div class="section-header">
                         <span class="section-title">
@@ -770,7 +744,6 @@
                         </button>
                     </div>
                     <div class="participants-list" id="participantsList">
-                        <!-- Current User -->
                         <div class="participant-item">
                             <div class="participant-info">
                                 <div class="participant-avatar" th:text="${#strings.substring(username, 0, 1)}">U</div>
@@ -791,7 +764,6 @@
                     </div>
                 </div>
 
-                <!-- Host Controls -->
                 <div class="host-controls" th:if="${isHost}" id="hostControls">
                     <div class="host-controls-title">
                         <i class="bi bi-shield-check"></i>
@@ -807,7 +779,6 @@
                     </button>
                 </div>
 
-                <!-- Tips -->
                 <div class="tips-section">
                     <div class="tips-title">
                         <i class="bi bi-lightbulb"></i>
@@ -821,7 +792,6 @@
                     </ul>
                 </div>
 
-                <!-- Leave Button -->
                 <a href="/index" class="leave-btn">
                     <i class="bi bi-x-circle"></i>
                     Leave Lobby
@@ -830,7 +800,6 @@
         </div>
     </div>
 
-    <!-- Notification Container -->
     <div class="notification-container" id="notificationContainer"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -840,15 +809,12 @@
         let isMicEnabled = false;
         let isCameraEnabled = false;
 
-        // Initialize on load
         document.addEventListener('DOMContentLoaded', () => {
             loadDevices();
         });
 
-        // Load available devices
         async function loadDevices() {
             try {
-                // Request permissions to get device labels
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
                 stream.getTracks().forEach(track => track.stop());
 
@@ -880,7 +846,6 @@
             }
         }
 
-        // Toggle microphone
         async function toggleMic() {
             const micBtn = document.getElementById('micBtn');
 
@@ -912,7 +877,6 @@
             }
         }
 
-        // Toggle camera
         async function toggleCamera() {
             const camBtn = document.getElementById('camBtn');
             const videoPreview = document.getElementById('videoPreview');
@@ -957,7 +921,6 @@
             }
         }
 
-        // Toggle settings panel
         function toggleSettings() {
             const settingsPanel = document.getElementById('settingsPanel');
             const settingsBtn = document.getElementById('settingsBtn');
@@ -966,7 +929,6 @@
             settingsBtn.classList.toggle('active');
         }
 
-        // Test audio
         function testAudio() {
             const audio = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU');
             try {
@@ -978,7 +940,6 @@
             }
         }
 
-        // Copy meeting code
         function copyMeetingCode() {
             const code = document.querySelector('.meeting-code').textContent;
             navigator.clipboard.writeText(code).then(() => {
@@ -986,13 +947,11 @@
             });
         }
 
-        // Prepare join - set hidden inputs
         function prepareJoin() {
             document.getElementById('audioEnabled').value = isMicEnabled;
             document.getElementById('videoEnabled').value = isCameraEnabled;
         }
 
-        // Host controls
         function toggleWaitingRoom() {
             showNotification('Waiting room enabled', 'info');
         }
@@ -1005,7 +964,6 @@
             showNotification('All participants admitted', 'success');
         }
 
-        // Notification
         function showNotification(message, type = 'info') {
             const container = document.getElementById('notificationContainer');
             const icons = {
@@ -1031,7 +989,6 @@
             }, 3000);
         }
 
-        // Cleanup on page unload
         window.addEventListener('beforeunload', () => {
             if (localStream) {
                 localStream.getTracks().forEach(track => track.stop());

@@ -1,18 +1,14 @@
-// Main Script for ConferMeet
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize tooltips
+document.addEventListener('DOMContentLoaded', function () {
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function(tooltipTriggerEl) {
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
-    // Handle contact form submission
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             const formData = {
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
@@ -20,15 +16,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 message: document.getElementById('message').value
             };
 
-            // Show success message
             showAlert('Thank you for your message! We will get back to you soon.', 'success');
             contactForm.reset();
         });
     }
 
-    // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
+        anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
             if (href !== '#' && document.querySelector(href)) {
                 e.preventDefault();
@@ -40,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Function to show alerts
 function showAlert(message, type = 'info') {
     const alertHTML = `
         <div class="alert alert-${type} alert-dismissible fade show position-fixed" 
@@ -49,10 +42,9 @@ function showAlert(message, type = 'info') {
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', alertHTML);
-    
-    // Auto-dismiss after 5 seconds
+
     setTimeout(() => {
         const alert = document.querySelector('.alert-dismissible');
         if (alert) {
@@ -61,9 +53,8 @@ function showAlert(message, type = 'info') {
     }, 5000);
 }
 
-// Animation for elements on scroll
 function observeElements() {
-    const observer = new IntersectionObserver(function(entries) {
+    const observer = new IntersectionObserver(function (entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('fade-in');
@@ -77,18 +68,15 @@ function observeElements() {
 
 observeElements();
 
-// Handle meeting join
 function joinMeeting(meetingCode, userName) {
     if (!meetingCode || !userName) {
         showAlert('Please enter meeting code and name', 'warning');
         return false;
     }
-    
-    // Store meeting info in sessionStorage
+
     sessionStorage.setItem('meetingCode', meetingCode);
     sessionStorage.setItem('userName', userName);
-    
-    // Redirect to meeting
+
     window.location.href = 'meeting.html';
     return false;
 }

@@ -1,9 +1,3 @@
-/**
- * ConferMeet - Google Meet Clone
- * WebRTC Video Conferencing Implementation
- */
-
-// Global state
 const state = {
     localStream: null,
     screenStream: null,
@@ -12,29 +6,24 @@ const state = {
     participants: new Map(),
     waitingParticipants: new Map(),
 
-    // User info
     username: '',
     isHost: false,
     participantId: null,
     meetingCode: '',
 
-    // Media states
     isAudioEnabled: false,
     isVideoEnabled: false,
     isScreenSharing: false,
     isHandRaised: false,
     isRecording: false,
 
-    // Meeting state
     meetingStartTime: null,
     currentPanel: null,
 
-    // Settings
     waitingRoomEnabled: false,
     meetingLocked: false
 };
 
-// WebRTC Configuration
 const rtcConfig = {
     iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
@@ -43,32 +32,32 @@ const rtcConfig = {
     ]
 };
 
-// Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     initializeMeeting();
     setupEventListeners();
     startMeetingTimer();
 });
 
-/**
- * Initialize the meeting
- */
+
 async function initializeMeeting() {
-    // Get user data from hidden elements
     state.username = document.getElementById('usernameData')?.value || 'User';
     state.isHost = document.getElementById('isHostData')?.value === 'true';
     state.meetingCode = document.getElementById('meetingCodeBadge')?.textContent?.trim() || '';
 
-    // Update UI for host
+    const urlParams = new URLSearchParams(window.location.search);
+    const audioEnabledParam = urlParams.get('audioEnabled');
+    const videoEnabledParam = urlParams.get('videoEnabled');
+
+    state.isAudioEnabled = audioEnabledParam === 'true';
+    state.isVideoEnabled = videoEnabledParam === 'true';
+
     if (!state.isHost) {
         const hostControls = document.getElementById('hostControls');
         if (hostControls) hostControls.style.display = 'none';
     }
 
-    // Initialize WebSocket connection
     await connectWebSocket();
 
-    // Show self in participants
     addParticipantToList({
         id: 'local',
         username: state.username + ' (You)',
@@ -77,12 +66,51 @@ async function initializeMeeting() {
         videoEnabled: state.isVideoEnabled
     });
 
+    initializeMediaButtonStates();
+
     showNotification('Ready to join! Enable your camera and microphone to get started.', 'info');
 }
 
-/**
- * Connect to WebSocket signaling server
- */
+
+function initializeMediaButtonStates() {
+    const micBtn = document.getElementById('micBtn');
+    const camBtn = document.getElementById('camBtn');
+    const localMicIndicator = document.getElementById('localMicIndicator');
+    const localCamIndicator = document.getElementById('localCamIndicator');
+    const localPlaceholder = document.getElementById('localPlaceholder');
+
+    if (micBtn && localMicIndicator) {
+        if (!state.isAudioEnabled) {
+            micBtn.classList.add('off');
+            micBtn.innerHTML = '<i class="bi bi-mic-mute-fill"></i>';
+            localMicIndicator.classList.add('off');
+            localMicIndicator.innerHTML = '<i class="bi bi-mic-mute-fill"></i>';
+        } else {
+            micBtn.classList.remove('off');
+            micBtn.innerHTML = '<i class="bi bi-mic-fill"></i>';
+            localMicIndicator.classList.remove('off');
+            localMicIndicator.innerHTML = '<i class="bi bi-mic-fill"></i>';
+        }
+    }
+
+    if (camBtn && localCamIndicator) {
+        if (!state.isVideoEnabled) {
+            camBtn.classList.add('off');
+            camBtn.innerHTML = '<i class="bi bi-camera-video-off-fill"></i>';
+            localCamIndicator.classList.add('off');
+            localCamIndicator.innerHTML = '<i class="bi bi-camera-video-off-fill"></i>';
+            if (localPlaceholder) localPlaceholder.style.display = 'flex';
+        } else {
+            camBtn.classList.remove('off');
+            camBtn.innerHTML = '<i class="bi bi-camera-video-fill"></i>';
+            localCamIndicator.classList.remove('off');
+            localCamIndicator.innerHTML = '<i class="bi bi-camera-video-fill"></i>';
+            if (localPlaceholder) localPlaceholder.style.display = 'none';
+        }
+    }
+}
+
+
 async function connectWebSocket() {
     return new Promise((resolve, reject) => {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -92,7 +120,6 @@ async function connectWebSocket() {
 
         state.socket.onopen = () => {
             console.log('WebSocket connected');
-            // Join the meeting room
             sendSignal({
                 type: 'join',
                 meetingCode: state.meetingCode,
@@ -117,24 +144,19 @@ async function connectWebSocket() {
         state.socket.onclose = () => {
             console.log('WebSocket closed');
             showNotification('Connection lost. Attempting to reconnect...', 'warning');
-            // Attempt reconnection after 3 seconds
             setTimeout(connectWebSocket, 3000);
         };
     });
 }
 
-/**
- * Send signaling message
- */
+
 function sendSignal(message) {
     if (state.socket && state.socket.readyState === WebSocket.OPEN) {
         state.socket.send(JSON.stringify(message));
     }
 }
 
-/**
- * Handle incoming signaling messages
- */
+
 async function handleSignalingMessage(message) {
     switch (message.type) {
         case 'join-success':
@@ -145,7 +167,6 @@ async function handleSignalingMessage(message) {
             break;
 
         case 'participants-list':
-            // Add existing participants
             for (const participant of message.participants) {
                 await handleNewParticipant(participant);
             }
@@ -206,7 +227,6 @@ async function handleSignalingMessage(message) {
             break;
 
         case 'admitted':
-            // Re-join after being admitted
             sendSignal({
                 type: 'join',
                 meetingCode: state.meetingCode,
@@ -244,14 +264,11 @@ async function handleSignalingMessage(message) {
     }
 }
 
-/**
- * Handle new participant joining
- */
+
 async function handleNewParticipant(participant) {
     const id = participant.id || participant.participantId;
     if (!id || id === 'local' || id === state.participantId) return;
 
-    // Check if we already have this participant
     if (state.participants.has(id)) {
         console.log(`Participant ${id} already exists, updating info.`);
         const existingParticipant = state.participants.get(id);
@@ -262,62 +279,50 @@ async function handleNewParticipant(participant) {
     participant.id = id;
     state.participants.set(id, participant);
 
-    // Add to UI if not already present
     addParticipantToList(participant);
     addVideoTile(participant);
     updateParticipantCount();
     updateGridLayout();
 
-    // Create peer connection and send offer
     await createPeerConnection(id);
 }
 
-/**
- * Handle participant leaving
- */
+
 function handleParticipantLeft(message) {
     const participantId = message.participantId;
     state.participants.delete(participantId);
 
-    // Close peer connection
     if (state.peerConnections[participantId]) {
         state.peerConnections[participantId].close();
         delete state.peerConnections[participantId];
     }
 
-    // Remove from UI
     removeVideoTile(participantId);
     removeParticipantFromList(participantId);
     updateParticipantCount();
     updateGridLayout();
 }
 
-/**
- * Create WebRTC peer connection
- */
+
 async function createPeerConnection(participantId) {
     const pc = new RTCPeerConnection(rtcConfig);
     state.peerConnections[participantId] = pc;
 
-    // Add local stream tracks
     if (state.localStream) {
         state.localStream.getTracks().forEach(track => {
             pc.addTrack(track, state.localStream);
         });
     }
 
-    // Handle incoming tracks
     pc.ontrack = (event) => {
         const remoteVideo = document.getElementById(`video-${participantId}`);
         if (remoteVideo) {
             remoteVideo.srcObject = event.streams[0];
-            // Hide placeholder
             const placeholder = document.querySelector(`#tile-${participantId} .video-placeholder`);
             if (placeholder) placeholder.style.display = 'none';
         }
     };
 
-    // Handle ICE candidates
     pc.onicecandidate = (event) => {
         if (event.candidate) {
             sendSignal({
@@ -328,12 +333,10 @@ async function createPeerConnection(participantId) {
         }
     };
 
-    // Handle connection state changes
     pc.onconnectionstatechange = () => {
         console.log(`Connection state with ${participantId}: ${pc.connectionState}`);
     };
 
-    // Create and send offer
     try {
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
@@ -347,9 +350,7 @@ async function createPeerConnection(participantId) {
     }
 }
 
-/**
- * Handle incoming offer
- */
+
 async function handleOffer(message) {
     const participantId = message.senderId;
     let pc = state.peerConnections[participantId];
@@ -358,7 +359,6 @@ async function handleOffer(message) {
         pc = new RTCPeerConnection(rtcConfig);
         state.peerConnections[participantId] = pc;
 
-        // Add local stream tracks
         if (state.localStream) {
             state.localStream.getTracks().forEach(track => {
                 pc.addTrack(track, state.localStream);
@@ -399,9 +399,7 @@ async function handleOffer(message) {
     }
 }
 
-/**
- * Handle incoming answer
- */
+
 async function handleAnswer(message) {
     const pc = state.peerConnections[message.senderId];
     if (pc) {
@@ -413,9 +411,7 @@ async function handleAnswer(message) {
     }
 }
 
-/**
- * Handle incoming ICE candidate
- */
+
 async function handleIceCandidate(message) {
     const pc = state.peerConnections[message.senderId];
     if (pc && message.candidate) {
@@ -427,9 +423,7 @@ async function handleIceCandidate(message) {
     }
 }
 
-/**
- * Toggle microphone
- */
+
 async function toggleMic() {
     const micBtn = document.getElementById('micBtn');
     const localMicIndicator = document.getElementById('localMicIndicator');
@@ -439,7 +433,6 @@ async function toggleMic() {
             state.localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
             state.isAudioEnabled = true;
 
-            // Add tracks to existing peer connections
             for (const [peerId, pc] of Object.entries(state.peerConnections)) {
                 state.localStream.getAudioTracks().forEach(track => {
                     pc.addTrack(track, state.localStream);
@@ -457,7 +450,6 @@ async function toggleMic() {
         });
     }
 
-    // Update UI
     if (state.isAudioEnabled) {
         micBtn.classList.remove('off');
         micBtn.innerHTML = '<i class="bi bi-mic-fill"></i>';
@@ -472,7 +464,6 @@ async function toggleMic() {
         showNotification('Microphone off', 'warning');
     }
 
-    // Notify other participants
     sendSignal({
         type: 'toggle-media',
         mediaType: 'audio',
@@ -480,9 +471,7 @@ async function toggleMic() {
     });
 }
 
-/**
- * Toggle camera
- */
+
 async function toggleCamera() {
     const camBtn = document.getElementById('camBtn');
     const localCamIndicator = document.getElementById('localCamIndicator');
@@ -504,7 +493,6 @@ async function toggleCamera() {
             state.isVideoEnabled = true;
             localVideo.srcObject = state.localStream;
 
-            // Add video tracks to existing peer connections
             for (const [peerId, pc] of Object.entries(state.peerConnections)) {
                 state.localStream.getVideoTracks().forEach(track => {
                     pc.addTrack(track, state.localStream);
@@ -522,7 +510,6 @@ async function toggleCamera() {
         });
     }
 
-    // Update UI
     if (state.isVideoEnabled) {
         camBtn.classList.remove('off');
         camBtn.innerHTML = '<i class="bi bi-camera-video-fill"></i>';
@@ -539,7 +526,6 @@ async function toggleCamera() {
         showNotification('Camera off', 'warning');
     }
 
-    // Notify other participants
     sendSignal({
         type: 'toggle-media',
         mediaType: 'video',
@@ -547,9 +533,7 @@ async function toggleCamera() {
     });
 }
 
-/**
- * Toggle screen sharing
- */
+
 async function toggleScreenShare() {
     const screenShareBtn = document.getElementById('screenShareBtn');
 
@@ -563,7 +547,6 @@ async function toggleScreenShare() {
             state.isScreenSharing = true;
             screenShareBtn.classList.add('active');
 
-            // Replace video track in peer connections
             const videoTrack = state.screenStream.getVideoTracks()[0];
             for (const [peerId, pc] of Object.entries(state.peerConnections)) {
                 const sender = pc.getSenders().find(s => s.track?.kind === 'video');
@@ -574,18 +557,15 @@ async function toggleScreenShare() {
                 }
             }
 
-            // Show screen share in local view
             document.getElementById('localVideo').srcObject = state.screenStream;
             document.getElementById('localPlaceholder').style.display = 'none';
 
-            // Handle when user stops sharing via browser UI
             videoTrack.onended = () => {
                 stopScreenShare();
             };
 
             showNotification('Started screen sharing', 'success');
 
-            // Notify others
             sendSignal({
                 type: 'screen-share',
                 sharing: true
@@ -602,9 +582,7 @@ async function toggleScreenShare() {
     }
 }
 
-/**
- * Stop screen sharing
- */
+
 function stopScreenShare() {
     if (state.screenStream) {
         state.screenStream.getTracks().forEach(track => track.stop());
@@ -614,7 +592,6 @@ function stopScreenShare() {
     state.isScreenSharing = false;
     document.getElementById('screenShareBtn').classList.remove('active');
 
-    // Restore camera if it was on
     if (state.isVideoEnabled && state.localStream) {
         const videoTrack = state.localStream.getVideoTracks()[0];
         if (videoTrack) {
@@ -638,9 +615,7 @@ function stopScreenShare() {
     });
 }
 
-/**
- * Toggle hand raise
- */
+
 function toggleHand() {
     state.isHandRaised = !state.isHandRaised;
     const handBtn = document.getElementById('handBtn');
@@ -663,9 +638,6 @@ function toggleHand() {
     });
 }
 
-/**
- * Send chat message
- */
 function sendChatMessage() {
     const input = document.getElementById('messageInput');
     const text = input.value.trim();
@@ -677,7 +649,6 @@ function sendChatMessage() {
         message: text
     });
 
-    // Display own message
     displayChatMessage({
         senderId: 'local',
         senderName: state.username,
@@ -689,9 +660,7 @@ function sendChatMessage() {
     input.value = '';
 }
 
-/**
- * Display chat message
- */
+
 function displayChatMessage(message) {
     const chatMessages = document.getElementById('chatMessages');
     const isOwn = message.senderId === 'local' || message.own;
@@ -714,15 +683,12 @@ function displayChatMessage(message) {
     chatMessages.insertAdjacentHTML('beforeend', messageHtml);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    // Show notification if chat panel is closed
     if (state.currentPanel !== 'chat' && !isOwn) {
         showNotification(`${message.senderName}: ${message.message.substring(0, 50)}...`, 'info');
     }
 }
 
-/**
- * Toggle side panel (chat/participants)
- */
+
 function togglePanel(panelType) {
     const sidePanel = document.getElementById('sidePanel');
     const participantsPanel = document.getElementById('participantsPanel');
@@ -733,13 +699,11 @@ function togglePanel(panelType) {
     const participantsBtn = document.getElementById('participantsBtn');
 
     if (state.currentPanel === panelType) {
-        // Close panel
         sidePanel.classList.remove('open');
         state.currentPanel = null;
         chatBtn.classList.remove('active');
         participantsBtn.classList.remove('active');
     } else {
-        // Open panel
         sidePanel.classList.add('open');
         state.currentPanel = panelType;
 
@@ -761,9 +725,7 @@ function togglePanel(panelType) {
     }
 }
 
-/**
- * Close side panel
- */
+
 function closeSidePanel() {
     document.getElementById('sidePanel').classList.remove('open');
     document.getElementById('chatBtn').classList.remove('active');
@@ -771,9 +733,7 @@ function closeSidePanel() {
     state.currentPanel = null;
 }
 
-/**
- * Add video tile for participant
- */
+
 function addVideoTile(participant) {
     if (document.getElementById(`tile-${participant.id}`)) return;
 
@@ -825,17 +785,13 @@ function addVideoTile(participant) {
     videoGrid.insertAdjacentHTML('beforeend', tileHtml);
 }
 
-/**
- * Remove video tile
- */
+
 function removeVideoTile(participantId) {
     const tile = document.getElementById(`tile-${participantId}`);
     if (tile) tile.remove();
 }
 
-/**
- * Add participant to list panel
- */
+
 function addParticipantToList(participant) {
     if (document.getElementById(`participant-${participant.id}`)) return;
 
@@ -873,26 +829,20 @@ function addParticipantToList(participant) {
     list.insertAdjacentHTML('beforeend', itemHtml);
 }
 
-/**
- * Remove participant from list
- */
+
 function removeParticipantFromList(participantId) {
     const item = document.getElementById(`participant-${participantId}`);
     if (item) item.remove();
 }
 
-/**
- * Update participant count badge
- */
+
 function updateParticipantCount() {
     const count = state.participants.size + 1; // +1 for local user
     const badge = document.getElementById('participantCount');
     if (badge) badge.textContent = count;
 }
 
-/**
- * Update video grid layout based on participant count
- */
+
 function updateGridLayout() {
     const videoGrid = document.getElementById('videoGrid');
     const count = state.participants.size + 1;
@@ -907,13 +857,10 @@ function updateGridLayout() {
     else videoGrid.classList.add('grid-many');
 }
 
-/**
- * Update participant media status in UI
- */
+
 function updateParticipantMedia(message) {
     const { participantId, mediaType, enabled } = message;
 
-    // Update tile indicator
     const indicator = document.getElementById(`${mediaType === 'audio' ? 'mic' : 'cam'}-${participantId}`);
     if (indicator) {
         if (enabled) {
@@ -925,7 +872,6 @@ function updateParticipantMedia(message) {
         }
     }
 
-    // Update list indicator
     const listIndicator = document.getElementById(`list-${mediaType === 'audio' ? 'mic' : 'cam'}-${participantId}`);
     if (listIndicator) {
         if (enabled) {
@@ -937,7 +883,6 @@ function updateParticipantMedia(message) {
         }
     }
 
-    // Update participant state
     const participant = state.participants.get(participantId);
     if (participant) {
         if (mediaType === 'audio') participant.audioEnabled = enabled;
@@ -945,9 +890,7 @@ function updateParticipantMedia(message) {
     }
 }
 
-/**
- * Handle hand raised notification
- */
+
 function handleHandRaised(message) {
     const badge = document.getElementById(`hand-badge-${message.participantId}`);
     if (badge) {
@@ -959,9 +902,7 @@ function handleHandRaised(message) {
     }
 }
 
-/**
- * Handle screen share notification
- */
+
 function handleScreenShareNotification(message) {
     const tile = document.getElementById(`tile-${message.participantId}`);
     if (tile) {
@@ -975,9 +916,7 @@ function handleScreenShareNotification(message) {
     updateGridLayout();
 }
 
-/**
- * Handle force mute from host
- */
+
 function handleForceMute(message) {
     if (message.mediaType === 'audio' && state.isAudioEnabled) {
         toggleMic();
@@ -988,9 +927,7 @@ function handleForceMute(message) {
     }
 }
 
-/**
- * Handle being removed from meeting
- */
+
 function handleRemoved(message) {
     showNotification(message.reason || 'You have been removed from the meeting', 'error');
     setTimeout(() => {
@@ -998,9 +935,7 @@ function handleRemoved(message) {
     }, 3000);
 }
 
-/**
- * Handle waiting room participant (host only)
- */
+
 function handleWaitingParticipant(message) {
     state.waitingParticipants.set(message.participantId, message);
 
@@ -1025,9 +960,7 @@ function handleWaitingParticipant(message) {
     showNotification(`${message.username} is waiting to join`, 'info');
 }
 
-/**
- * Host controls - Mute participant
- */
+
 function muteParticipant(participantId, mediaType) {
     if (!state.isHost) return;
 
@@ -1040,9 +973,7 @@ function muteParticipant(participantId, mediaType) {
     showNotification(`Muted participant's ${mediaType}`, 'success');
 }
 
-/**
- * Host controls - Remove participant
- */
+
 function removeParticipant(participantId) {
     if (!state.isHost) return;
 
@@ -1054,9 +985,7 @@ function removeParticipant(participantId) {
     }
 }
 
-/**
- * Host controls - Admit participant from waiting room
- */
+
 function admitParticipant(participantId) {
     if (!state.isHost) return;
 
@@ -1065,7 +994,6 @@ function admitParticipant(participantId) {
         targetId: participantId
     });
 
-    // Remove from waiting list UI
     const waitingItem = document.getElementById(`waiting-${participantId}`);
     if (waitingItem) waitingItem.remove();
 
@@ -1073,9 +1001,7 @@ function admitParticipant(participantId) {
     updateWaitingCount();
 }
 
-/**
- * Host controls - Deny participant
- */
+
 function denyParticipant(participantId) {
     if (!state.isHost) return;
 
@@ -1091,9 +1017,7 @@ function denyParticipant(participantId) {
     updateWaitingCount();
 }
 
-/**
- * Host controls - Admit all from waiting room
- */
+
 function admitAll() {
     if (!state.isHost) return;
 
@@ -1102,9 +1026,7 @@ function admitAll() {
     }
 }
 
-/**
- * Update waiting room count
- */
+
 function updateWaitingCount() {
     const count = state.waitingParticipants.size;
     document.getElementById('waitingCount').textContent = count;
@@ -1114,17 +1036,13 @@ function updateWaitingCount() {
     }
 }
 
-/**
- * Host controls - Toggle waiting room
- */
+
 function toggleWaitingRoom() {
     state.waitingRoomEnabled = document.getElementById('waitingRoomToggle').checked;
     showNotification(state.waitingRoomEnabled ? 'Waiting room enabled' : 'Waiting room disabled', 'info');
 }
 
-/**
- * Host controls - Toggle lock meeting
- */
+
 function toggleLockMeeting() {
     state.meetingLocked = document.getElementById('lockMeetingToggle').checked;
 
@@ -1134,9 +1052,7 @@ function toggleLockMeeting() {
     });
 }
 
-/**
- * Host controls - Mute all participants
- */
+
 function muteAllParticipants() {
     if (!state.isHost) return;
 
@@ -1147,14 +1063,11 @@ function muteAllParticipants() {
     showNotification('Muted all participants', 'success');
 }
 
-/**
- * Leave the meeting
- */
+
 function leaveMeeting() {
     if (confirm('Are you sure you want to leave the meeting?')) {
         sendSignal({ type: 'leave' });
 
-        // Stop all media
         if (state.localStream) {
             state.localStream.getTracks().forEach(track => track.stop());
         }
@@ -1162,12 +1075,10 @@ function leaveMeeting() {
             state.screenStream.getTracks().forEach(track => track.stop());
         }
 
-        // Close all peer connections
         for (const pc of Object.values(state.peerConnections)) {
             pc.close();
         }
 
-        // Close WebSocket
         if (state.socket) {
             state.socket.close();
         }
@@ -1176,9 +1087,7 @@ function leaveMeeting() {
     }
 }
 
-/**
- * Copy meeting code to clipboard
- */
+
 function copyMeetingCode() {
     const code = state.meetingCode;
     navigator.clipboard.writeText(code).then(() => {
@@ -1186,9 +1095,7 @@ function copyMeetingCode() {
     });
 }
 
-/**
- * Open share modal
- */
+
 function openShareModal() {
     const modal = new bootstrap.Modal(document.getElementById('shareModal'));
     const shareLink = `${window.location.origin}/index?join=${encodeURIComponent(state.meetingCode)}`;
@@ -1197,9 +1104,7 @@ function openShareModal() {
     toggleMoreMenu();
 }
 
-/**
- * Copy share link
- */
+
 function copyShareLink() {
     const link = document.getElementById('shareLinkInput').value;
     navigator.clipboard.writeText(link).then(() => {
@@ -1207,9 +1112,7 @@ function copyShareLink() {
     });
 }
 
-/**
- * Share via external apps
- */
+
 function shareVia(platform) {
     const link = document.getElementById('shareLinkInput').value;
     const text = `Join my ConferMeet meeting: ${link}`;
@@ -1224,16 +1127,12 @@ function shareVia(platform) {
     }
 }
 
-/**
- * Toggle more options menu
- */
+
 function toggleMoreMenu() {
     document.getElementById('moreMenu').classList.toggle('show');
 }
 
-/**
- * Toggle recording (placeholder)
- */
+
 function toggleRecording() {
     state.isRecording = !state.isRecording;
     const label = document.getElementById('recordingLabel');
@@ -1249,17 +1148,13 @@ function toggleRecording() {
     toggleMoreMenu();
 }
 
-/**
- * Open settings (placeholder)
- */
+
 function openSettings() {
     showNotification('Settings coming soon!', 'info');
     toggleMoreMenu();
 }
 
-/**
- * View keyboard shortcuts
- */
+
 function viewShortcuts() {
     const shortcuts = `
 Keyboard Shortcuts:
@@ -1273,9 +1168,7 @@ Keyboard Shortcuts:
     toggleMoreMenu();
 }
 
-/**
- * Toggle fullscreen
- */
+
 function toggleFullscreen() {
     if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen();
@@ -1284,9 +1177,6 @@ function toggleFullscreen() {
     }
 }
 
-/**
- * Start meeting timer
- */
 function startMeetingTimer() {
     const timeDisplay = document.getElementById('meetingTime');
     const durationDisplay = document.getElementById('durationDisplay');
@@ -1304,11 +1194,7 @@ function startMeetingTimer() {
     }, 1000);
 }
 
-/**
- * Setup keyboard shortcuts and event listeners
- */
 function setupEventListeners() {
-    // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
@@ -1332,7 +1218,6 @@ function setupEventListeners() {
         }
     });
 
-    // Chat input enter key
     document.getElementById('messageInput')?.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -1340,22 +1225,17 @@ function setupEventListeners() {
         }
     });
 
-    // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.more-dropdown')) {
             document.getElementById('moreMenu')?.classList.remove('show');
         }
     });
 
-    // Handle page unload
     window.addEventListener('beforeunload', () => {
         sendSignal({ type: 'leave' });
     });
 }
 
-/**
- * Show notification
- */
 function showNotification(message, type = 'info') {
     const container = document.getElementById('notificationContainer');
 
@@ -1382,9 +1262,6 @@ function showNotification(message, type = 'info') {
     }, 4000);
 }
 
-/**
- * Escape HTML to prevent XSS
- */
 function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');

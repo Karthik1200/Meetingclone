@@ -32,11 +32,9 @@ public class PasswordResetToken {
         this.createdAt = LocalDateTime.now();
     }
 
-    // Default constructor
     public PasswordResetToken() {
     }
 
-    // Parameterized constructor
     public PasswordResetToken(String token, User user, LocalDateTime expiryDate) {
         this.token = token;
         this.user = user;
@@ -52,7 +50,6 @@ public class PasswordResetToken {
         return !this.used && !isExpired();
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

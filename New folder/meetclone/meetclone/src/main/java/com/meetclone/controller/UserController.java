@@ -95,11 +95,7 @@ public class UserController {
         return "forgot_password";
     }
 
-    /**
-     * GET /reset-password?token=UUID
-     * User clicks the link from their email — this validates the token
-     * and shows the reset password form if the token is valid.
-     */
+    
     @GetMapping("/reset-password")
     public String resetPasswordPage(@RequestParam(required = false) String token, Model model) {
         if (token == null || token.trim().isEmpty()) {
@@ -463,16 +459,7 @@ public class UserController {
         return "redirect:/loginpage?logout=true";
     }
 
-    // ==========================================
-    // Token-Based Forgot/Reset Password Flow
-    // ==========================================
 
-    /**
-     * POST /forgot-password
-     * User submits their email on the forgot password form.
-     * Backend validates email, generates a UUID token, stores it in DB,
-     * and sends a reset link via email.
-     */
     @PostMapping("/forgot-password")
     public String forgotPassword(@RequestParam String email,
             Model model) {
@@ -488,15 +475,13 @@ public class UserController {
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
 
-                // Generate token, store in DB, and send email
                 userService.createPasswordResetToken(user);
 
                 model.addAttribute("success",
                         "A password reset link has been sent to your email address. Please check your inbox (and spam folder).");
                 return "forgot_password";
             } else {
-                // For security, show the same success message even if email doesn't exist
-                // This prevents email enumeration attacks
+                
                 model.addAttribute("success",
                         "If an account exists with that email, a password reset link has been sent. Please check your inbox.");
                 return "forgot_password";
@@ -507,11 +492,7 @@ public class UserController {
         }
     }
 
-    /**
-     * POST /reset-password
-     * User submits their new password along with the token.
-     * Backend validates the token, updates the password, and invalidates the token.
-     */
+    
     @PostMapping("/reset-password")
     public String resetPassword(@RequestParam String token,
             @RequestParam String newPassword,

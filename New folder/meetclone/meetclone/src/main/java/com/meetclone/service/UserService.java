@@ -133,40 +133,29 @@ public class UserService {
         });
     }
 
-    // ==========================================
-    // Token-Based Password Reset Methods
-    // ==========================================
-
-    /**
-     * Creates a unique UUID token, stores it in the DB with a 15-minute expiry,
-     * and sends a password reset email with a direct link.
-     */
+    
     @Transactional
     public String createPasswordResetToken(User user) {
-        // Invalidate any existing unused tokens for this user
         List<PasswordResetToken> existingTokens = tokenRepo.findByUserAndUsedFalse(user);
         for (PasswordResetToken existing : existingTokens) {
             existing.setUsed(true);
             tokenRepo.save(existing);
         }
 
-        // Generate a new unique token
+        
         String tokenValue = UUID.randomUUID().toString();
         LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(TOKEN_EXPIRY_MINUTES);
 
         PasswordResetToken resetToken = new PasswordResetToken(tokenValue, user, expiryDate);
         tokenRepo.save(resetToken);
 
-        // Send the reset email
+        
         emailService.sendPasswordResetEmail(user.getEmail(), tokenValue);
 
         return tokenValue;
     }
 
-    /**
-     * Validates a password reset token: checks existence, expiry, and used status.
-     * Returns the PasswordResetToken if valid, or empty Optional if invalid.
-     */
+    
     public Optional<PasswordResetToken> validatePasswordResetToken(String token) {
         Optional<PasswordResetToken> tokenOpt = tokenRepo.findByToken(token);
 
@@ -183,10 +172,7 @@ public class UserService {
         return Optional.of(resetToken);
     }
 
-    /**
-     * Resets the user's password using the provided token.
-     * The token is invalidated (marked as used) after successful reset.
-     */
+    
     @Transactional
     public boolean resetPasswordWithToken(String token, String newPassword) {
         Optional<PasswordResetToken> tokenOpt = validatePasswordResetToken(token);
@@ -198,20 +184,15 @@ public class UserService {
         PasswordResetToken resetToken = tokenOpt.get();
         User user = resetToken.getUser();
 
-        // Update the user's password
         user.setPassword(newPassword);
         repo.save(user);
 
-        // Invalidate the token (mark as used)
         resetToken.setUsed(true);
         tokenRepo.save(resetToken);
 
         return true;
     }
 
-    // ==========================================
-    // Existing helper methods
-    // ==========================================
 
     public boolean isAdmin(User user) {
         return user != null && "ADMIN".equalsIgnoreCase(user.getRole());
